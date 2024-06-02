@@ -7,6 +7,6 @@ public class AttackCard : CardData
 
     private void OnEnable()
     {
-        type = Type.Attack;
+        type = CARD_TYPE.ATTACK;
     }
 }

@@ -5,6 +5,6 @@ public class PowerCard : CardData
 {
     private void OnEnable()
     {
-        type = Type.Power;
+        type = CARD_TYPE.POWER;
     }
 }

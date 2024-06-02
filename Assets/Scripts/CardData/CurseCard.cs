@@ -5,6 +5,6 @@ public class CurseCard : CardData
 {
     private void OnEnable()
     {
-        type = Type.Curse;
+        type = CARD_TYPE.CURSE;
     }
 }

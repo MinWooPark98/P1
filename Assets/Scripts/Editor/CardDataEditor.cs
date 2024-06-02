@@ -19,36 +19,18 @@ public class CardDataEditor : Editor
 
         DrawFields(serializedObject.targetObject, serializedObject.targetObject.GetType());
 
-        //GUILayout.BeginVertical();
-
-        //EditorGUILayout.PropertyField(type, true);
-        //EditorGUILayout.Space(10);
-        //EditorGUILayout.PropertyField(buffList, true);
-        EditorGUILayout.Space(10);
-
-        GUILayout.BeginHorizontal();
-        GUILayoutOption[] optionButtons = new[] { GUILayout.ExpandWidth(true) };
-        if (GUILayout.Button("Add BuffPublic", optionButtons))
-        {
-            cardData.buffList.Add(new BuffPublic(BuffPublic.Type.Str, 0));
-        }
-        if (GUILayout.Button("Add BuffPlayer", optionButtons))
-        {
-            cardData.buffList.Add(new BuffPlayer(BuffPlayer.Type.Confused, 0));
-        }
-        if (GUILayout.Button("Add BuffEnemy", optionButtons))
-        {
-            cardData.buffList.Add(new BuffEnemy(BuffEnemy.Type.testEnemy2, 0));
-        }
-        GUILayout.EndHorizontal();
-        //GUILayout.EndVertical();
-
         serializedObject.ApplyModifiedProperties();
     }
 
     // CardData와 그 자식 클래스들의 변수를 모두 프로퍼티로 만듬
     private void DrawFields(object targetObject, Type type)
     {
+        // 부모 클래스가 있으면, 부모 클래스의 변수부터 자식 클래스의 변수 순서로 진행
+        if (type.BaseType != null && type.BaseType == typeof(CardData))
+        {
+            DrawFields(targetObject, type.BaseType);
+        }
+
         FieldInfo[] fields = type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly);
         foreach (FieldInfo field in fields)
         {
@@ -58,13 +40,70 @@ public class CardDataEditor : Editor
                 if (property != null)
                 {
                     EditorGUILayout.PropertyField(property, new GUIContent(field.Name), true);
+
+                    // 특정 프로퍼티만 버튼을 추가하는 등의 작업을 하기 위해 이름으로 구분해서 별도 작업
+                    switch (property.name)
+                    {
+                        case "buffList":
+                            {
+                                if (property.isArray && property.arraySize == 0)
+                                {
+                                    property.isExpanded = false;
+                                }
+
+                                EditorGUILayout.Space(6);
+
+                                GUILayout.BeginHorizontal();
+                                GUILayoutOption[] optionButtons = new[] { GUILayout.ExpandWidth(true) };
+                                
+                                if (GUILayout.Button("Add BuffPlayer", optionButtons))
+                                {
+                                    cardData.AddBuff(new BuffData(BUFF_TARGET.PLAYER, BUFF_TYPE.STR, -1, false, null));
+                                    property.isExpanded = true;
+                                }
+                                if (GUILayout.Button("Add BuffEnemy", optionButtons))
+                                {
+                                    cardData.AddBuff(new BuffData(BUFF_TARGET.ENEMY, BUFF_TYPE.STR, -1, false, null));
+                                    property.isExpanded = true;
+                                }
+                                GUILayout.EndHorizontal();
+
+                                if (GUILayout.Button("Removel All Buffs"))
+                                {
+                                    cardData.ClearBuffList();
+                                }
+
+                                EditorGUILayout.Space(14);
+                            }
+                            break;
+                        case "featureList":
+                            {
+                                if (property.isArray && property.arraySize == 0)
+                                {
+                                    property.isExpanded = false;
+                                }
+
+                                EditorGUILayout.Space(6);
+
+                                if (GUILayout.Button("Add FeatureList"))
+                                {
+                                    cardData.AddFeature(new CardData.CardFeature(CARD_FEATURE.EXHAUST, -1));
+                                    property.isExpanded = true;
+                                }
+
+                                if (GUILayout.Button("Removel All Features"))
+                                {
+                                    cardData.ClearFeatureList();
+                                }
+
+                                EditorGUILayout.Space(14);
+                            }
+                            break;
+                        default:
+                            break;
+                    }
                 }
             }
-        }
-
-        if (type.BaseType != null && type.BaseType != typeof(MonoBehaviour))
-        {
-            DrawFields(targetObject, type.BaseType);
         }
     }
 }
