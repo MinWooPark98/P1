@@ -35,8 +35,8 @@ public partial class BattleManager : MonoBehaviour
     private List<CardData> exhaustedCards = new List<CardData>();                           // 소멸 더미
 
     // 테스트용 임시
-    private float initTimer = 2.0f;
-    private float startTimer = 2.0f;
+    private float initTimer = 1.0f;
+    private float startTimer = 1.0f;
 
     private int initDrawCount = 5;
     private int drawCount = 0;
@@ -44,10 +44,16 @@ public partial class BattleManager : MonoBehaviour
     private float drawDuration = 0.5f;
     private float drawTimer = 0f;
 
+    private int refillEnergy = 3;
+    private int energy = 0;
+
     [SerializeField]
     private Character player;
     [SerializeField]
-    private Character Enemy;
+    private Character[] enemyList;
+
+    private ItemCard selectedCard = null;
+    private bool isTargeting = false;
     // 테스트용 임시 끝
 
 

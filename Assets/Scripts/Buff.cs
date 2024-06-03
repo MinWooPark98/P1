@@ -15,6 +15,7 @@ public struct BuffData
     public BUFF_TYPE type;
     public int value;
     public bool applySelf;
+    public bool applyAllEnemies;
 
     /// <summary>
     /// 유니티 에디터에서 버프 만들기 쉽게 하기 위한 용도의 생성자, 이 외에는 사용하지 않음
@@ -24,13 +25,14 @@ public struct BuffData
     /// <param name="_value"></param>
     /// <param name="_applySelf"></param>
     /// <param name="_iconName"></param>
-    public BuffData(BUFF_TARGET _target, BUFF_TYPE _type, int _value, bool _applySelf, string _iconName)
+    public BuffData(BUFF_TARGET _target, string _iconName, BUFF_TYPE _type, int _value, bool _applySelf, bool _applyAllEnemies)
     {
         target = _target;
+        iconName = _iconName;
         type = _type;
         value = _value;
         applySelf = _applySelf;
-        iconName = _iconName;
+        applyAllEnemies = _applyAllEnemies;
     }
 }
 

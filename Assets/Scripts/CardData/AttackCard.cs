@@ -4,6 +4,7 @@ using UnityEngine;
 public class AttackCard : CardData
 {
     public int damage;
+    public bool atkAllEnemies;
 
     private void OnEnable()
     {

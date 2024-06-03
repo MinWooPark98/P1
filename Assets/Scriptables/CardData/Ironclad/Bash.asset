@@ -24,5 +24,7 @@ MonoBehaviour:
     type: 11003
     value: 2
     applySelf: 0
+    applyAllEnemies: 0
   featureList: []
   damage: 8
+  atkAllEnemies: 0

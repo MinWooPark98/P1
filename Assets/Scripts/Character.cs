@@ -1,42 +1,69 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
-public class Character : MonoBehaviour
+public class Character : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     [SerializeField]
     private int maxHp = 0;
+    public int MaxHp
+    {
+        get => maxHp;
+        private set
+        {
+            maxHp = value;
+            characterInfo.SetHp(currHp, maxHp);
+        }
+    }
 
     [SerializeField]
     private int currHp = 0;
+    public int CurrHp
+    {
+        get => currHp;
+        private set
+        {
+            currHp = value;
+            characterInfo.SetHp(currHp, maxHp);
+            if (currHp <= 0)
+            {
+                gameObject.SetActive(false);
+            }
+        }
+    }
 
     [SerializeField]
-    private int energy = 3;
+    private int defense;
+    public int Defense
+    {
+        get => defense;
+        private set
+        {
+            defense = value;
+            characterInfo.SetDefense(defense);
+        }
+    }
 
     [SerializeField]
     private List<BuffData> buffList = new List<BuffData>();
 
-
     [SerializeField]
     private CharacterInfo characterInfo = null;
 
+    [SerializeField]
+    private System.Action actionClicked = null;
 
-    private void Update()
-    {
-        if (maxHp > 0)
-        {
-            characterInfo.SetHp(currHp, maxHp);
-        }
-        characterInfo.SetEnergy(energy);
-    }
+    private bool onPointer = false;
 
-    /// <summary>
-    /// 최대 체력 입력
-    /// </summary>
-    /// <param name="_maxHp"></param>
-    public void SetMaxHp(int _maxHp)
+
+    public void Init(int _currHp, int _maxHp, int _defense, List<BuffData> _buffList)
     {
-        maxHp = _maxHp;
+        CurrHp = _currHp;
+        MaxHp = _maxHp;
+        Defense = _defense;
+        
+        characterInfo.Init(_currHp, _maxHp, _buffList);
     }
 
     /// <summary>
@@ -45,7 +72,7 @@ public class Character : MonoBehaviour
     /// <param name="_addMaxHp"></param>
     public void AddMaxHp(int _addMaxHp)
     {
-        maxHp += _addMaxHp;
+        MaxHp += _addMaxHp;
     }
 
     /// <summary>
@@ -54,11 +81,12 @@ public class Character : MonoBehaviour
     /// <param name="_hp"></param>
     public void Recovery(int _hp)
     {
-        currHp += _hp;
-        if (currHp > maxHp)
+        int cal = CurrHp + _hp;
+        if (cal > MaxHp)
         {
-            currHp = maxHp;
+            cal = MaxHp;
         }
+        CurrHp = cal;
     }
 
     /// <summary>
@@ -67,12 +95,22 @@ public class Character : MonoBehaviour
     /// <param name="_damage"></param>
     public void Damage(int _damage)
     {
-        currHp -= _damage;
-        if (currHp <= 0)
+        Defense -= _damage;
+        if (Defense < 0)
         {
-            currHp = 0;
-            gameObject.SetActive(false);
+            _damage = Defense * (-1);
+            Defense = 0;
+            CurrHp -= _damage;
         }
+    }
+
+    /// <summary>
+    /// 방어도 획득
+    /// </summary>
+    /// <param name="_defense"></param>
+    public void AddDefense(int _defense)
+    {
+        Defense += _defense;
     }
 
     /// <summary>
@@ -104,46 +142,29 @@ public class Character : MonoBehaviour
     /// 버프 여러 개 추가
     /// </summary>
     /// <param name="_newBuffs"></param>
-    public void AddBuffs(List<BuffData> _newBuffs)
+    public void AddBuff(List<BuffData> _newBuffs)
     {
         for (int i = 0; i < _newBuffs.Count; ++i)
         {
             AddBuff(_newBuffs[i]);
         }
     }
-
-    /// <summary>
-    /// 에너지 값 가져오기
-    /// </summary>
-    /// <returns></returns>
-    public int GetEnergy()
+    public void SetActionClicked(System.Action _actionClicked)
     {
-        return energy;
+        actionClicked = _actionClicked;
     }
 
-    /// <summary>
-    /// 에너지 증가
-    /// </summary>
-    /// <param name="_energy"></param>
-    public void AddEnergy(int _energy)
+    public void OnPointerEnter(PointerEventData eventData)
     {
-        energy += _energy;
+        onPointer = true;
+        characterInfo.ShowBuff(true);
     }
 
-    /// <summary>
-    /// 에너지 감소
-    /// </summary>
-    /// <param name="_energy"></param>
-    public void ReduceEnergy(int _energy)
+    public void OnPointerExit(PointerEventData eventData)
     {
-        energy -= _energy;
+        onPointer = false;
+        characterInfo.ShowBuff(false);
     }
 
-    /// <summary>
-    /// 에너지 비우기
-    /// </summary>
-    public void ClearEnergy()
-    {
-        energy = 0;
-    }
+    public bool GetOnPointer() => onPointer;
 }

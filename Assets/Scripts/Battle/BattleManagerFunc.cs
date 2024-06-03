@@ -45,20 +45,95 @@ public partial class BattleManager : MonoBehaviour
         }
 
         drawCount--;
-        CardData drawCard = drawPile[0];
-        handCards.Add(drawCard);
+        CardData drawCardData = drawPile[0];
+        handCards.Add(drawCardData);
         drawPile.RemoveAt(0);
+        PopupBattle.Instance.DrawCard(drawCardData);
+    }
 
-        PopupBattle.Instance.DrawCard(drawCard);
+    /// <summary>
+    /// 카드를 묘지로 보낸다
+    /// </summary>
+    public void DiscardCard()
+    {
+
+    }
+
+    public void SelectCard(ItemCard _itemCard)
+    {
+        selectedCard = _itemCard;
+        selectedCard.Select();
+    }
+
+    public void DeselectCard()
+    {
+        selectedCard.Deselect();
+        selectedCard = null;
+    }
+
+    public ItemCard GetSelectedCard()
+    {
+        return selectedCard;
+    }
+
+    /// <summary>
+    /// 카드, 아이템 사용이 가능한지 여부 (현재 선택된 카드/아이템이 없어야 함)
+    /// </summary>
+    public bool IsSelectable()
+    {
+        return selectedCard == null /*&& selectedItem == null*/;
+    }
+
+    public void SetTargeting(bool _isTargeting)
+    {
+        isTargeting = _isTargeting;
+    }
+
+    public void SetEnergy(int _energy)
+    {
+        energy = _energy;
+        PopupBattle.Instance.SetEnergy(energy, refillEnergy);
+    }
+
+    public void UseEnergy(int _energyCost)
+    {
+        if (energy < _energyCost)
+        {
+            LogManager.LogError("에너지 부족 - 이 메소드까지 오면 안 됨");
+            return;
+        }
+        SetEnergy(energy - _energyCost);
+    }
+
+    public void AddEnergy(int _energy)
+    {
+        SetEnergy(energy + _energy);
+    }
+
+    public int GetEnergy() => energy;
+
+    public bool IsEnergyEnough(int _energyCost)
+    {
+        return energy >= _energyCost;
+    }
+
+    public void UseCard(Character _target)
+    {
+        selectedCard.Use(_target);
     }
 
     public void TurnEnd()
     {
-        if (currState != BATTLE_STATE.PLAYERTURN)
+        if (currState != BATTLE_STATE.PLAYERTURN ||
+            selectedCard != null //||
+            /*selectedItem == null*/)
         {
             return;
         }
 
         ChangeState(BATTLE_STATE.ENEMYTURN);
     }
+
+    public Character GetPlayer() => player;
+    public Character[] GetEnemyList() => enemyList;
 }

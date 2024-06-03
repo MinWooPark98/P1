@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class PopupBattle : MonoBehaviour
@@ -19,6 +20,9 @@ public class PopupBattle : MonoBehaviour
     [SerializeField]
     private ItemCard prefabItemCard = null;
 
+    [SerializeField]
+    private TMP_Text textEnergy = null;
+
 
     private void Awake()
     {
@@ -34,5 +38,20 @@ public class PopupBattle : MonoBehaviour
     {
         ItemCard newCard = Instantiate(prefabItemCard, objHand.transform);
         newCard.Set(_data);
+        newCard.SetActionClicked(
+            () =>
+            {
+                BattleManager.Instance.SelectCard(newCard);
+            });
+    }
+
+    public void SetEnergy(int _energy, int _refillEnergy)
+    {
+        textEnergy.text = string.Format(_energy + "/" +  _refillEnergy);
+    }
+
+    public void TurnEnd()
+    {
+        BattleManager.Instance.TurnEnd();
     }
 }

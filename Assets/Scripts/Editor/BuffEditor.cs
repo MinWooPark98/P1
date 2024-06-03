@@ -19,6 +19,8 @@ public class BuffDataEditor : PropertyDrawer
 
         SerializedProperty buffTarget = property.FindPropertyRelative("target");
         SerializedProperty buffType = property.FindPropertyRelative("type");
+        SerializedProperty applySelf = property.FindPropertyRelative("applySelf");
+        SerializedProperty applyAllEnemies = property.FindPropertyRelative("applyAllEnemies");
 
         float lineHeight = EditorGUIUtility.singleLineHeight;
         float yOffset = position.y;
@@ -66,6 +68,12 @@ public class BuffDataEditor : PropertyDrawer
                 yOffset += lineHeight + EditorGUIUtility.standardVerticalSpacing;
 
                 currentProperty.NextVisible(false);
+            }
+            else if (currentProperty.propertyPath == applyAllEnemies.propertyPath &&
+                    (buffTarget.intValue == (int)BUFF_TARGET.PLAYER || applySelf.boolValue == true))
+            {
+                currentProperty.NextVisible(false);
+                continue;
             }
             else
             {
