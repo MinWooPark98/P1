@@ -2,9 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class CharacterInfo : MonoBehaviour
+public class CharacterInfo : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     [SerializeField]
     private TMP_Text textHp = null;
@@ -14,6 +15,8 @@ public class CharacterInfo : MonoBehaviour
 
     [SerializeField]
     private Image imgHpBar = null;
+
+    private float HpApplyDuration = 2f;
 
     [SerializeField]
     private TMP_Text textDefense = null;
@@ -26,6 +29,11 @@ public class CharacterInfo : MonoBehaviour
 
     private bool isApplyingHp = false;
     private float lerpPercentage = 0f;
+
+    [SerializeField]
+    private System.Action actionClicked = null;
+
+    private bool onPointer = false;
 
 
     public void Init(int _currHp, int _maxHp, List<BuffData> _buffList)
@@ -41,8 +49,9 @@ public class CharacterInfo : MonoBehaviour
     public void SetHp(int _currHp, int _maxHp)
     {
         textHp.text = string.Format(_currHp + " / " + _maxHp);
-        imgHpBarBack.fillAmount = GetHpPercentage(_currHp, _maxHp);
+        imgHpBar.fillAmount = GetHpPercentage(_currHp, _maxHp);
         isApplyingHp = true;
+        lerpPercentage = 0f;
     }
 
     private float GetHpPercentage(int _currHp, int _maxHp)
@@ -76,7 +85,7 @@ public class CharacterInfo : MonoBehaviour
                     strBuff = string.Format(strBuff + "\n");
                 }
 
-                strBuff += string.Format(_buffs[i].value > 0 ? string.Format(strBuff + _buffs[i].type) : string.Format(strBuff + _buffs[i].type + " " + _buffs[i].value)); 
+                strBuff += string.Format(_buffs[i].value < 0 ? string.Format(strBuff + _buffs[i].type) : string.Format(strBuff + _buffs[i].type + " " + _buffs[i].value)); 
             }
         }
         textBuff.text = strBuff;
@@ -86,13 +95,32 @@ public class CharacterInfo : MonoBehaviour
     {
         if (isApplyingHp)
         {
-            lerpPercentage += Time.deltaTime;
+            lerpPercentage += Time.deltaTime / HpApplyDuration;
             if (lerpPercentage > 1f)
             {
                 lerpPercentage = 1f;
                 isApplyingHp = false;
             }
-            //imgHpBar.fillAmount = Mathf.Lerp(imgHpBar.fillAmount, imgHpBarBack.fillAmount, lerpPercentage);
+            imgHpBarBack.fillAmount = Mathf.Lerp(imgHpBarBack.fillAmount, imgHpBar.fillAmount, lerpPercentage);
         }
     }
+
+    public void SetActionClicked(System.Action _actionClicked)
+    {
+        actionClicked = _actionClicked;
+    }
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        onPointer = true;
+        ShowBuff(true);
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        onPointer = false;
+        ShowBuff(false);
+    }
+
+    public bool GetOnPointer() => onPointer;
 }

@@ -48,51 +48,54 @@ public partial class BattleManager : MonoBehaviour
         CardData drawCardData = drawPile[0];
         handCards.Add(drawCardData);
         drawPile.RemoveAt(0);
-        PopupBattle.Instance.DrawCard(drawCardData);
+        popupBattle.DrawCard(drawCardData);
     }
 
     /// <summary>
     /// 카드를 묘지로 보낸다
     /// </summary>
-    public void DiscardCard()
+    public void DiscardCard(ItemCard _itemCard)
     {
-
+        CardData dataDiscard = _itemCard.GetData();
+        popupBattle.DiscardCard(_itemCard);
+        handCards.Remove(dataDiscard);
+        discardPile.Add(dataDiscard);
     }
 
-    public void SelectCard(ItemCard _itemCard)
-    {
-        selectedCard = _itemCard;
-        selectedCard.Select();
-    }
+    //public void SelectCard(ItemCard _itemCard)
+    //{
+    //    selectedCard = _itemCard;
+    //    selectedCard.Select();
+    //}
 
-    public void DeselectCard()
-    {
-        selectedCard.Deselect();
-        selectedCard = null;
-    }
+    //public void DeselectCard()
+    //{
+    //    selectedCard.Deselect();
+    //    selectedCard = null;
+    //}
 
-    public ItemCard GetSelectedCard()
-    {
-        return selectedCard;
-    }
+    //public ItemCard GetSelectedCard()
+    //{
+    //    return selectedCard;
+    //}
 
-    /// <summary>
-    /// 카드, 아이템 사용이 가능한지 여부 (현재 선택된 카드/아이템이 없어야 함)
-    /// </summary>
-    public bool IsSelectable()
-    {
-        return selectedCard == null /*&& selectedItem == null*/;
-    }
+    ///// <summary>
+    ///// 카드, 아이템 사용이 가능한지 여부 (현재 선택된 카드/아이템이 없어야 함)
+    ///// </summary>
+    //public bool IsSelectable()
+    //{
+    //    return selectedCard == null /*&& selectedItem == null*/;
+    //}
 
-    public void SetTargeting(bool _isTargeting)
-    {
-        isTargeting = _isTargeting;
-    }
+    //public void SetTargeting(bool _isTargeting)
+    //{
+    //    isTargeting = _isTargeting;
+    //}
 
     public void SetEnergy(int _energy)
     {
         energy = _energy;
-        PopupBattle.Instance.SetEnergy(energy, refillEnergy);
+        popupBattle.SetEnergy(energy, refillEnergy);
     }
 
     public void UseEnergy(int _energyCost)
@@ -112,20 +115,15 @@ public partial class BattleManager : MonoBehaviour
 
     public int GetEnergy() => energy;
 
-    public bool IsEnergyEnough(int _energyCost)
-    {
-        return energy >= _energyCost;
-    }
-
-    public void UseCard(Character _target)
-    {
-        selectedCard.Use(_target);
-    }
+    //public void UseCard(Character _target)
+    //{
+    //    selectedCard.Use(_target);
+    //}
 
     public void TurnEnd()
     {
-        if (currState != BATTLE_STATE.PLAYERTURN ||
-            selectedCard != null //||
+        if (currState != BATTLE_STATE.PLAYERTURN //||
+            //selectedCard != null //||
             /*selectedItem == null*/)
         {
             return;
@@ -135,5 +133,5 @@ public partial class BattleManager : MonoBehaviour
     }
 
     public Character GetPlayer() => player;
-    public Character[] GetEnemyList() => enemyList;
+    public List<Character> GetEnemyList() => enemyList;
 }

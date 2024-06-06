@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class Character : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+public class Character
 {
     [SerializeField]
     private int maxHp = 0;
@@ -28,7 +28,7 @@ public class Character : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
             characterInfo.SetHp(currHp, maxHp);
             if (currHp <= 0)
             {
-                gameObject.SetActive(false);
+                Die();
             }
         }
     }
@@ -48,14 +48,15 @@ public class Character : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     [SerializeField]
     private List<BuffData> buffList = new List<BuffData>();
 
-    [SerializeField]
     private CharacterInfo characterInfo = null;
 
-    [SerializeField]
-    private System.Action actionClicked = null;
 
-    private bool onPointer = false;
+    public void SetCharacterInfo(CharacterInfo _characterInfo)
+    {
+        characterInfo = _characterInfo;
+    }
 
+    public CharacterInfo GetCharacterInfo() => characterInfo;
 
     public void Init(int _currHp, int _maxHp, int _defense, List<BuffData> _buffList)
     {
@@ -105,6 +106,14 @@ public class Character : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
     }
 
     /// <summary>
+    /// Á×À½
+    /// </summary>
+    public void Die()
+    {
+        characterInfo.gameObject.SetActive(false);
+    }
+
+    /// <summary>
     /// ¹æ¾îµµ È¹µæ
     /// </summary>
     /// <param name="_defense"></param>
@@ -136,6 +145,8 @@ public class Character : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
         {
             buffList.Add(_buff);
         }
+
+        characterInfo.SetBuffs(buffList);
     }
 
     /// <summary>
@@ -149,22 +160,4 @@ public class Character : MonoBehaviour, IPointerEnterHandler, IPointerExitHandle
             AddBuff(_newBuffs[i]);
         }
     }
-    public void SetActionClicked(System.Action _actionClicked)
-    {
-        actionClicked = _actionClicked;
-    }
-
-    public void OnPointerEnter(PointerEventData eventData)
-    {
-        onPointer = true;
-        characterInfo.ShowBuff(true);
-    }
-
-    public void OnPointerExit(PointerEventData eventData)
-    {
-        onPointer = false;
-        characterInfo.ShowBuff(false);
-    }
-
-    public bool GetOnPointer() => onPointer;
 }

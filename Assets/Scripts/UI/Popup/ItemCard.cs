@@ -2,9 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class ItemCard : MonoBehaviour
+public class ItemCard : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     [SerializeField]
     private Image imgBackground = null;
@@ -21,7 +22,9 @@ public class ItemCard : MonoBehaviour
     private CardData data = null;
 
     private System.Action actionClicked = null;
+    private bool isLookingAt = false;
     private bool isSelected = false;
+    private bool isTargeting = false;
 
     public void Set(CardData _data)
     {
@@ -67,6 +70,19 @@ public class ItemCard : MonoBehaviour
         }
     }
 
+    public CardData GetData() => data;
+
+    private void Update()
+    {
+    }
+
+    public void SetClickable(bool _clickable)
+    {
+        btnCard.interactable = _clickable;
+    }
+
+    public bool GetClickable() => btnCard.interactable;
+
     public void SetActionClicked(System.Action _actionClicked)
     {
         actionClicked = _actionClicked;
@@ -83,11 +99,11 @@ public class ItemCard : MonoBehaviour
     public void Select()
     {
         isSelected = true;
-        if (Equals(data.GetType(), typeof(AttackCard)) &&
-            ((AttackCard)data).atkAllEnemies == false)
-        {
-            BattleManager.Instance.SetTargeting(true);
-        }
+        //if (Equals(data.GetType(), typeof(AttackCard)) &&
+        //    ((AttackCard)data).atkAllEnemies == false)
+        //{
+        //    BattleManager.Instance.SetTargeting(true);
+        //}
         imgBackground.color = Color.green;
     }
 
@@ -98,29 +114,45 @@ public class ItemCard : MonoBehaviour
     {
         isSelected = false;
         imgBackground.color = Color.white;
-        BattleManager.Instance.SetTargeting(false);
+        //BattleManager.Instance.SetTargeting(false);
+    }
+
+    public bool GetSelected() => isSelected;
+
+    public void SetTargeting(bool _targeting)
+    {
+        LogManager.Log(_targeting ? "타켓팅 시작" : "타켓팅 해제");
+        isTargeting = _targeting;
+    }
+
+    public bool GetTargeting() => isTargeting;
+
+    public bool GetUsable()
+    {
+        return data.energy <= BattleManager.Instance.GetEnergy();
     }
 
     // 타겟 하나를 지정하는 카드의 경우
     public void Use(Character target = null)
     {
-        if (BattleManager.Instance.GetState() != BattleManager.BATTLE_STATE.PLAYERTURN ||
-            BattleManager.Instance.GetSelectedCard() != this)
+        if (BattleManager.Instance.GetState() != BattleManager.BATTLE_STATE.PLAYERTURN) //||
+            //BattleManager.Instance.GetSelectedCard() != this)
         {
             return;
         }
 
-        if (!BattleManager.Instance.IsEnergyEnough(data.energy))
+        if (!GetUsable())
         {
-            BattleManager.Instance.DeselectCard();
+            //BattleManager.Instance.DeselectCard();
             LogManager.Log($"에너지 부족해서 스킬 사용 취소 // 필요 에너지: {data.energy} / 보유 에너지: {BattleManager.Instance.GetEnergy()}");
             return;
         }
 
+        // 에너지 소모
         BattleManager.Instance.UseEnergy(data.energy);
 
         Character player = BattleManager.Instance.GetPlayer();
-        Character[] enemyList = BattleManager.Instance.GetEnemyList();
+        List<Character> enemyList = BattleManager.Instance.GetEnemyList();
 
         switch (data.type)
         {
@@ -133,7 +165,7 @@ public class ItemCard : MonoBehaviour
                     }
                     else
                     {
-                        for (int i = 0; i < enemyList.Length; i++)
+                        for (int i = 0; i < enemyList.Count; i++)
                         {
                             enemyList[i].Damage(card.damage);
                         }
@@ -167,7 +199,7 @@ public class ItemCard : MonoBehaviour
                     {
                         if (data.buffList[i].applyAllEnemies)
                         {
-                            for (int j = 0; j < enemyList.Length; i++)
+                            for (int j = 0; j < enemyList.Count; i++)
                             {
                                 enemyList[i].AddBuff(data.buffList);
                             }
@@ -181,9 +213,21 @@ public class ItemCard : MonoBehaviour
             }
         }
 
-        BattleManager.Instance.DeselectCard();
-        gameObject.SetActive(false);
+        //BattleManager.Instance.DeselectCard();
+        BattleManager.Instance.DiscardCard(this);
     }
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        isLookingAt = true;
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        isLookingAt = false;
+    }
+
+    public bool GetLookingAt() => isLookingAt;
 
     // 타겟을 지정하지 않는 카드의 경우
     //public void Use()

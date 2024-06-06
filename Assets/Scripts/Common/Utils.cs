@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public static class Utils
@@ -224,6 +225,38 @@ public static class Utils
     public static void RefreshGUI(RectTransform _rectTransform)
     {
         UnityEngine.UI.LayoutRebuilder.ForceRebuildLayoutImmediate(_rectTransform);
+    }
+
+    // 마우스가 다른 그래픽과 관계없이 해당 그래픽(이미지, TMP 등) 위에 있는지 확인
+    public static bool IsMouseOverGraphic(Canvas _canvas, Graphic _target)
+    {
+        PointerEventData eventData = new PointerEventData(EventSystem.current);
+        eventData.position = Input.mousePosition;
+
+        GraphicRaycaster raycaster = _canvas.GetComponent<GraphicRaycaster>();
+        List<RaycastResult> results = new List<RaycastResult>();
+        raycaster.Raycast(eventData, results);
+
+        foreach (RaycastResult result in results)
+        {
+            if (result.gameObject == _target.gameObject)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // 마우스가 rectTransform 위에 있는지 확인
+    public static bool IsMouseOverRecttTransform(RectTransform _rectTransform)
+    {
+        Vector2 localMousePosition;
+        bool isInside = RectTransformUtility.ScreenPointToLocalPointInRectangle(_rectTransform, Input.mousePosition, null, out localMousePosition);
+        if (isInside == false)
+        {
+            return false;
+        }
+        return _rectTransform.rect.Contains(localMousePosition);
     }
 
     public static void AppQuit()

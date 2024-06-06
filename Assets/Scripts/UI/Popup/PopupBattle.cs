@@ -3,46 +3,42 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class PopupBattle : MonoBehaviour
+public class PopupBattle : Popup
 {
-    public static PopupBattle s_Instance;
-    public static PopupBattle Instance
-    {
-        get
-        {
-            return s_Instance;
-        }
-    }
-
-    [SerializeField]
-    private GameObject objHand = null;
-
-    [SerializeField]
-    private ItemCard prefabItemCard = null;
-
     [SerializeField]
     private TMP_Text textEnergy = null;
 
+    [SerializeField]
+    private CharacterInfo playerInfo = null;
 
-    private void Awake()
+    [SerializeField]
+    private List<CharacterInfo> enemyInfos = null;
+
+    [SerializeField]
+    private ObjectHand objHand = null;
+
+    [SerializeField]
+    private TrailRenderer rendererTargeting = null;
+    //private Image
+    private bool isTargeting = false;
+
+
+    protected override void Awake()
     {
-        s_Instance = this;
     }
 
-    private void OnDestroy()
+    protected override void OnDestroy()
     {
-        s_Instance = null;
     }
 
     public void DrawCard(CardData _data)
     {
-        ItemCard newCard = Instantiate(prefabItemCard, objHand.transform);
-        newCard.Set(_data);
-        newCard.SetActionClicked(
-            () =>
-            {
-                BattleManager.Instance.SelectCard(newCard);
-            });
+        objHand.DrawCard(_data);        
+    }
+
+    public void DiscardCard(ItemCard _itemCard)
+    {
+        objHand.DiscardCard(_itemCard);
     }
 
     public void SetEnergy(int _energy, int _refillEnergy)
@@ -54,4 +50,8 @@ public class PopupBattle : MonoBehaviour
     {
         BattleManager.Instance.TurnEnd();
     }
+
+    public CharacterInfo GetPlayerInfo() => playerInfo;
+
+    public List<CharacterInfo> GetEnemyInfos() => enemyInfos;
 }

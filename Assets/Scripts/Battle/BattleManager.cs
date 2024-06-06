@@ -47,13 +47,13 @@ public partial class BattleManager : MonoBehaviour
     private int refillEnergy = 3;
     private int energy = 0;
 
-    [SerializeField]
     private Character player;
-    [SerializeField]
-    private Character[] enemyList;
+    private List<Character> enemyList;
 
-    private ItemCard selectedCard = null;
-    private bool isTargeting = false;
+    //private ItemCard selectedCard = null;
+    //private bool isTargeting = false;
+
+    private PopupBattle popupBattle = null;
     // 테스트용 임시 끝
 
 
@@ -146,22 +146,22 @@ public partial class BattleManager : MonoBehaviour
         switch (_state)
         {
             case BATTLE_STATE.INIT:
-                ENTER_INIT();
+                EXIT_INIT();
                 break;
             case BATTLE_STATE.START:
-                ENTER_START();
+                EXIT_START();
                 break;
             case BATTLE_STATE.PLAYERTURN:
-                ENTER_PLAYERTURN();
+                EXIT_PLAYERTURN();
                 break;
             case BATTLE_STATE.ENEMYTURN:
-                ENTER_ENEMYTURN();
+                EXIT_ENEMYTURN();
                 break;
             case BATTLE_STATE.WIN:
-                ENTER_WIN();
+                EXIT_WIN();
                 break;
             case BATTLE_STATE.GAMEOVER:
-                ENTER_GAMEOVER();
+                EXIT_GAMEOVER();
                 break;
             default:
                 break;
