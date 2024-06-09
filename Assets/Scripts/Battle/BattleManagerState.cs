@@ -80,41 +80,6 @@ public partial class BattleManager : MonoBehaviour
             drawCount++;
         }
 
-        // 선택된 카드가 있을 때
-        //if (selectedCard != null)
-        //{
-        //    // esc키 입력 혹은 마우스 우클릭 시, 선택된 카드 선택 취소
-        //    if (Input.GetKeyDown(KeyCode.Escape) || Input.GetMouseButtonDown(1))
-        //    {
-        //        DeselectCard();
-        //    }
-        //    else if (Input.GetMouseButtonDown(0))                 // 마우스 좌클릭 시
-        //    {
-        //        // 타겟팅 중일 때 (주로 공격카드 발동 시)
-        //        if (isTargeting)
-        //        {
-        //            bool isTargetExist = false;
-        //            for (int i = 0; i < enemyList.Count; i++)
-        //            {
-        //                if (enemyList[i].GetCharacterInfo().GetOnPointer())
-        //                {
-        //                    isTargetExist = true;
-        //                    selectedCard.Use(enemyList[i]);
-        //                    break;
-        //                }
-        //            }
-        //            if (!isTargetExist)
-        //            {
-        //                DeselectCard();
-        //            }
-        //        }
-        //        else
-        //        {
-        //            selectedCard.Use();
-        //        }
-        //    }
-        //}
-
         // 드로우 중에는 다른 행동 불가
         isDrawing = drawCount > 0;
         if (isDrawing)

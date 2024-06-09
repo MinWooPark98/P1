@@ -62,36 +62,6 @@ public partial class BattleManager : MonoBehaviour
         discardPile.Add(dataDiscard);
     }
 
-    //public void SelectCard(ItemCard _itemCard)
-    //{
-    //    selectedCard = _itemCard;
-    //    selectedCard.Select();
-    //}
-
-    //public void DeselectCard()
-    //{
-    //    selectedCard.Deselect();
-    //    selectedCard = null;
-    //}
-
-    //public ItemCard GetSelectedCard()
-    //{
-    //    return selectedCard;
-    //}
-
-    ///// <summary>
-    ///// 카드, 아이템 사용이 가능한지 여부 (현재 선택된 카드/아이템이 없어야 함)
-    ///// </summary>
-    //public bool IsSelectable()
-    //{
-    //    return selectedCard == null /*&& selectedItem == null*/;
-    //}
-
-    //public void SetTargeting(bool _isTargeting)
-    //{
-    //    isTargeting = _isTargeting;
-    //}
-
     public void SetEnergy(int _energy)
     {
         energy = _energy;
@@ -115,22 +85,17 @@ public partial class BattleManager : MonoBehaviour
 
     public int GetEnergy() => energy;
 
-    //public void UseCard(Character _target)
-    //{
-    //    selectedCard.Use(_target);
-    //}
-
     public void TurnEnd()
     {
-        if (currState != BATTLE_STATE.PLAYERTURN //||
-            //selectedCard != null //||
-            /*selectedItem == null*/)
+        if (currState != BATTLE_STATE.PLAYERTURN)
         {
             return;
         }
 
         ChangeState(BATTLE_STATE.ENEMYTURN);
     }
+
+    public List<CardData> GetDrawPile() => drawPile;
 
     public Character GetPlayer() => player;
     public List<Character> GetEnemyList() => enemyList;

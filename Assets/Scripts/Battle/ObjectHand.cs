@@ -1,21 +1,27 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class ObjectHand : MonoBehaviour
 {
     [SerializeField]
-    private RectTransform rectHand = null;
+    private RectTransform rectHandArea = null;
+
+    [SerializeField]
+    private Transform parentCards = null;
 
     [SerializeField]
     private ItemCard prefabItemCard = null;
 
+    private List<ItemCard> cards = new List<ItemCard>();
+
     [SerializeField]
     private Image imgTargeting = null;
 
-
-    private List<ItemCard> cards = new List<ItemCard>();
+    [SerializeField]
+    private Transform lineTargeting = null;
 
     // 계산 최소화하기 위해 카드 수에 변동이 생겼을 때만 위치, 각도, 스케일 등 계산
     private int lastCardCount = 0;
@@ -63,6 +69,13 @@ public class ObjectHand : MonoBehaviour
     [SerializeField]
     private float SPEED_UPDATE_POSITION_MOUSE = 10f;
 
+    // 걍 표시하기 위한 임시 -> objectHand 스크립트 없애고 PopupBattle로 다 옮길까 생각중이라서 일단 쓰기 편하게 여기다 둠
+    [SerializeField]
+    private Graphic[] graphicsAnnouncement = null;
+    [SerializeField]
+    private TMP_Text textAnnouncement = null;
+    private Coroutine coroutine = null;
+
 
     private void Update()
     {
@@ -84,6 +97,7 @@ public class ObjectHand : MonoBehaviour
                 cards[i].transform.localRotation = Quaternion.Euler(Vector3.zero);
                 UpdateCardPosition(i, 0f, CARD_SIZE_HEIGHT * 0.5f * scale);
                 UpdateTargetingObjectPosition();
+                UpdateLineTargetingPosition(cards[i].transform.position);
 
                 // 마우스 우클릭 시 Deselect
                 if (Input.GetMouseButtonDown(1))
@@ -105,9 +119,8 @@ public class ObjectHand : MonoBehaviour
                 }
                 continue;
             }
-
             // 정보를 보고 있는 중이고
-            if (i == indexCardLookingAt)
+            else if (i == indexCardLookingAt)
             {
                 // 마우스 포인터가 얹어진 카드를 앞으로 꺼내서 정보 보기
                 cards[i].transform.SetSiblingIndex(cards.Count);
@@ -123,11 +136,12 @@ public class ObjectHand : MonoBehaviour
                     else
                     {
                         // 마우스가 hand 범위를 벗어났을 때,
-                        if (!Utils.IsMouseOverRecttTransform(rectHand))
+                        if (!Utils.IsMouseOverRecttTransform(rectHandArea))
                         {
                             // 에너지가 카드를 사용하기에 부족하면 Deselect
                             if (cards[i].GetUsable() == false)
                             {
+                                Announce("에너지가 부족해");
                                 DeselectCard(cards[i]);
                             }
                             else
@@ -188,7 +202,8 @@ public class ObjectHand : MonoBehaviour
     private float GetCardNextPosX(int _index, int _IndexCardLookingAt)
     {
         float nextPosX = -Mathf.Sin(GetCardRot(_index) / 180f * Mathf.PI) * RADIUS;
-        if (_IndexCardLookingAt >= 0)
+        // 선택된 카드가 타겟팅 중이면 벌어진 간격 제자리로
+        if (_IndexCardLookingAt >= 0 && cards[_IndexCardLookingAt].GetTargeting() == false)
         {
             int diff = _IndexCardLookingAt - _index;
             nextPosX += _index == _IndexCardLookingAt ? 0 : -CARD_SIZE_WIDTH * 0.22f / (Mathf.Sign(diff) * Mathf.Pow(diff, 2));
@@ -263,9 +278,10 @@ public class ObjectHand : MonoBehaviour
         return -1;
     }
 
-    public void DrawCard(CardData _data)
+    public void DrawCard(CardData _data, Transform _transform)
     {
-        ItemCard newCard = Instantiate(prefabItemCard, transform);
+        ItemCard newCard = Instantiate(prefabItemCard, parentCards);
+        newCard.transform.position = _transform.position;
         newCard.transform.localScale = Vector3.one * SCALE_HAND;
         newCard.Set(_data);
         newCard.SetActionClicked(
@@ -278,8 +294,9 @@ public class ObjectHand : MonoBehaviour
                 }
 
                 // hand 범위 안에서 카드 재클릭 시 Deselect
-                if (Utils.IsMouseOverRecttTransform(rectHand))
+                if (Utils.IsMouseOverRecttTransform(rectHandArea))
                 {
+                    Announce("에너지가 부족해");
                     DeselectCard(newCard);
                 }
                 else
@@ -293,8 +310,6 @@ public class ObjectHand : MonoBehaviour
                         UseCard(newCard);
                     }
                 }
-
-                //BattleManager.Instance.SelectCard(newCard);
             });
         cards.Add(newCard);
     }
@@ -303,25 +318,47 @@ public class ObjectHand : MonoBehaviour
     {
         if (_itemCard.GetUsable() == false)
         {
-            LogManager.Log("타겟팅 실패  =>  에너지 부족");
+            Announce("에너지가 부족해");
             DeselectCard(_itemCard);
             return;
         }
 
         _itemCard.SetTargeting(true);
         imgTargeting.gameObject.SetActive(true);
+        lineTargeting.gameObject.SetActive(true);
         UpdateTargetingObjectPosition();
+        UpdateLineTargetingPosition(_itemCard.transform.position);
     }
 
     public void StopTargeting(ItemCard _itemCard)
     {
         _itemCard.SetTargeting(false);
         imgTargeting.gameObject.SetActive(false);
+        lineTargeting.gameObject.SetActive(false);
     }
 
     private void UpdateTargetingObjectPosition()
     {
         imgTargeting.transform.position = Input.mousePosition;
+    }
+
+    private void UpdateLineTargetingPosition(Vector3 _posCard)
+    {
+        float lerp = 0f;
+        Vector3 lastPos = _posCard;
+        float posDiffX = Input.mousePosition.x - _posCard.x;
+        float midPosX = _posCard.x - (Mathf.Abs(posDiffX) < 120f ? posDiffX : Mathf.Sign(posDiffX) * 120f);
+        float midPosY = _posCard.y + (Input.mousePosition.y - _posCard.y) * 1.4f;
+        Vector3 midPos = new Vector3(midPosX, midPosY, 0f);
+        for (int i = 0; i < lineTargeting.childCount; i++)
+        {
+            lerp = (float)i / (lineTargeting.childCount - 1);
+            Vector3 newPos = Utils.BezierCurvesVector3(_posCard, midPos, Input.mousePosition, lerp);
+            lineTargeting.GetChild(i).position = newPos;
+            Vector3 dir = (newPos - lastPos).normalized;
+            lineTargeting.GetChild(i).rotation = Quaternion.AngleAxis(Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg + 90f, Vector3.forward);
+            lastPos = newPos;
+        }
     }
 
     public void SelectCard(ItemCard _itemCard)
@@ -347,5 +384,38 @@ public class ObjectHand : MonoBehaviour
         _itemCard.SetClickable(false);
         _itemCard.gameObject.SetActive(false);
         cards.Remove(_itemCard);
+    }
+
+    public void Announce(string _str)
+    {
+        if (coroutine != null)
+        {
+            StopCoroutine(coroutine);
+        }
+        coroutine = StartCoroutine(CoAnnounce(_str));
+    }
+
+    private IEnumerator CoAnnounce(string _str)
+    {
+        textAnnouncement.text = _str;
+        float albedo = 1f;
+        bool loop = true;
+        while (loop)
+        {
+            albedo -= Time.deltaTime;
+            if (albedo < 0f)
+            {
+                albedo = 0f;
+                loop = false;
+            }
+
+            for (int i = 0; i < graphicsAnnouncement.Length; i++)
+            {
+                Color color = graphicsAnnouncement[i].color;
+                color.a = albedo;
+                graphicsAnnouncement[i].color = color;
+            }
+            yield return null;
+        }
     }
 }

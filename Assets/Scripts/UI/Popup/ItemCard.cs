@@ -99,11 +99,6 @@ public class ItemCard : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     public void Select()
     {
         isSelected = true;
-        //if (Equals(data.GetType(), typeof(AttackCard)) &&
-        //    ((AttackCard)data).atkAllEnemies == false)
-        //{
-        //    BattleManager.Instance.SetTargeting(true);
-        //}
         imgBackground.color = Color.green;
     }
 
@@ -114,14 +109,12 @@ public class ItemCard : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         isSelected = false;
         imgBackground.color = Color.white;
-        //BattleManager.Instance.SetTargeting(false);
     }
 
     public bool GetSelected() => isSelected;
 
     public void SetTargeting(bool _targeting)
     {
-        LogManager.Log(_targeting ? "타켓팅 시작" : "타켓팅 해제");
         isTargeting = _targeting;
     }
 
@@ -135,16 +128,13 @@ public class ItemCard : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     // 타겟 하나를 지정하는 카드의 경우
     public void Use(Character target = null)
     {
-        if (BattleManager.Instance.GetState() != BattleManager.BATTLE_STATE.PLAYERTURN) //||
-            //BattleManager.Instance.GetSelectedCard() != this)
+        if (BattleManager.Instance.GetState() != BattleManager.BATTLE_STATE.PLAYERTURN)
         {
             return;
         }
 
-        if (!GetUsable())
+        if (GetUsable() == false)
         {
-            //BattleManager.Instance.DeselectCard();
-            LogManager.Log($"에너지 부족해서 스킬 사용 취소 // 필요 에너지: {data.energy} / 보유 에너지: {BattleManager.Instance.GetEnergy()}");
             return;
         }
 
@@ -213,7 +203,6 @@ public class ItemCard : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
             }
         }
 
-        //BattleManager.Instance.DeselectCard();
         BattleManager.Instance.DiscardCard(this);
     }
 
@@ -228,31 +217,4 @@ public class ItemCard : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     }
 
     public bool GetLookingAt() => isLookingAt;
-
-    // 타겟을 지정하지 않는 카드의 경우
-    //public void Use()
-    //{
-    //    if (BattleManager.Instance.GetState() != BattleManager.BATTLE_STATE.PLAYERTURN ||
-    //        BattleManager.Instance.GetSelectedCard() != this)
-    //    {
-    //        return;
-    //    }
-
-    //    switch (data.type)
-    //    {
-    //        case CARD_TYPE.ATTACK:
-    //            {
-
-    //            }
-    //            break;
-    //        case CARD_TYPE.SKILL:
-    //            break;
-    //        case CARD_TYPE.POWER:
-    //            break;
-    //        case CARD_TYPE.CURSE:
-    //            break;
-    //        case CARD_TYPE.CC:
-    //            break;
-    //    }
-    //}
 }

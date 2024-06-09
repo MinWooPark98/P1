@@ -18,22 +18,22 @@ public class PopupBattle : Popup
     private ObjectHand objHand = null;
 
     [SerializeField]
-    private TrailRenderer rendererTargeting = null;
-    //private Image
-    private bool isTargeting = false;
+    private Transform drawPile = null;
 
 
     protected override void Awake()
     {
+        base.Awake();
     }
 
     protected override void OnDestroy()
     {
+        base.OnDestroy();
     }
 
     public void DrawCard(CardData _data)
     {
-        objHand.DrawCard(_data);        
+        objHand.DrawCard(_data, drawPile);        
     }
 
     public void DiscardCard(ItemCard _itemCard)
@@ -54,4 +54,10 @@ public class PopupBattle : Popup
     public CharacterInfo GetPlayerInfo() => playerInfo;
 
     public List<CharacterInfo> GetEnemyInfos() => enemyInfos;
+
+    public void ButtonDrawPile()
+    {
+        PopupDrawPile popupDrawPile = UIManager.Instance.MakePopup<PopupDrawPile>();
+        popupDrawPile.SetCards(BattleManager.Instance.GetDrawPile());
+    }
 }

@@ -112,6 +112,11 @@ public static class Utils
         return Mathf.Lerp(f4, f5, _fDuration);
     }
 
+    public static Vector3 BezierCurvesVector3(Vector3 v1, Vector3 v2, Vector3 v3, float _fDuration)
+    {
+        return new Vector3(BezierCurvesFloat(v1.x, v2.x, v3.x, _fDuration), BezierCurvesFloat(v1.y, v2.y, v3.y, _fDuration), BezierCurvesFloat(v1.z, v2.z, v3.z, _fDuration));
+    }
+
     /// <summary>
     /// 스크롤을 컨텐츠 안에 있는 자식오브젝트를 센터로 잡아버림 (세로)
     /// </summary>
