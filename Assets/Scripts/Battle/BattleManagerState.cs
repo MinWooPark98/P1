@@ -80,6 +80,11 @@ public partial class BattleManager : MonoBehaviour
             drawCount++;
         }
 
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+            AddEnergy(2);
+        }
+
         // 드로우 중에는 다른 행동 불가
         isDrawing = drawCount > 0;
         if (isDrawing)
@@ -97,14 +102,14 @@ public partial class BattleManager : MonoBehaviour
 
     private void EXIT_PLAYERTURN()
     {
-
+        popupBattle.DiscardAll();
     }
 
 
     // ENEMYTURN
     private void ENTER_ENEMYTURN()
     {
-        popupBattle.gameObject.SetActive(false);
+
     }
 
     private void UPDATE_ENEMYTURN()

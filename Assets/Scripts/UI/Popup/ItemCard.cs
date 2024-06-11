@@ -22,9 +22,56 @@ public class ItemCard : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     private CardData data = null;
 
     private System.Action actionClicked = null;
+   // private bool isLookingAt = false;
+    //private bool isSelected = false;
+    //private bool isTargeting = false;
+    
+    public enum CARD_STATE
+    {
+        NONE = -1,
+        DRAW,
+        NORMAL,
+        SELECTED,
+        TARGETING,
+        USING,
+        DISCARD,
+        EXHAUSTED,
+    }
+
+
+    private CARD_STATE state = CARD_STATE.NONE;
     private bool isLookingAt = false;
-    private bool isSelected = false;
-    private bool isTargeting = false;
+
+    public CARD_STATE GetState() => state;
+    public void SetState(CARD_STATE _state)
+    {
+        if (state == _state)
+        {
+            return;
+        }
+
+        state = _state;
+        if (state > CARD_STATE.NORMAL)
+        {
+            imgBackground.color = Color.green;
+        }
+        else
+        {
+            imgBackground.color = Color.white;
+        }
+
+        switch (state)
+        {
+            case CARD_STATE.DISCARD:
+                BattleManager.Instance.DiscardCard(data);
+                Destroy(gameObject);
+                break;
+            default:
+                break;
+        }
+    }
+
+    public bool GetLookingAt() => isLookingAt;
 
     public void Set(CardData _data)
     {
@@ -76,13 +123,6 @@ public class ItemCard : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
     }
 
-    public void SetClickable(bool _clickable)
-    {
-        btnCard.interactable = _clickable;
-    }
-
-    public bool GetClickable() => btnCard.interactable;
-
     public void SetActionClicked(System.Action _actionClicked)
     {
         actionClicked = _actionClicked;
@@ -92,33 +132,6 @@ public class ItemCard : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         actionClicked?.Invoke();
     }
-
-    /// <summary>
-    /// 카드 선택 연출
-    /// </summary>
-    public void Select()
-    {
-        isSelected = true;
-        imgBackground.color = Color.green;
-    }
-
-    /// <summary>
-    ///  카드 선택 취소 연출
-    /// </summary>
-    public void Deselect()
-    {
-        isSelected = false;
-        imgBackground.color = Color.white;
-    }
-
-    public bool GetSelected() => isSelected;
-
-    public void SetTargeting(bool _targeting)
-    {
-        isTargeting = _targeting;
-    }
-
-    public bool GetTargeting() => isTargeting;
 
     public bool GetUsable()
     {
@@ -202,19 +215,18 @@ public class ItemCard : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
                     break;
             }
         }
-
-        BattleManager.Instance.DiscardCard(this);
     }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        isLookingAt = true;
+        if (state == CARD_STATE.NORMAL)
+        {
+            isLookingAt = true;
+        }
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
         isLookingAt = false;
     }
-
-    public bool GetLookingAt() => isLookingAt;
 }

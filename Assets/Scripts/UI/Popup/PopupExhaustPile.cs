@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class PopupDrawPile : Popup
+public class PopupExhaustPile : Popup
 {
     [SerializeField]
     private ItemCard prefabCard = null;

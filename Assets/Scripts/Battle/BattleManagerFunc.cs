@@ -4,15 +4,6 @@ using UnityEngine;
 
 public partial class BattleManager : MonoBehaviour
 {
-    public void ExhaustCard(CardData _cardData)
-    {
-        if (exhaustedCards == null)
-        {
-            exhaustedCards = new List<CardData>();
-        }
-        exhaustedCards.Add(_cardData);
-    }
-
     /// <summary>
     /// 드로우할 카드 숫자 지정
     /// </summary>
@@ -32,6 +23,13 @@ public partial class BattleManager : MonoBehaviour
             LogManager.LogError("drawCount <= 0 인데, DrawCard 실행");
             return;
         }
+        
+        if (handCards.Count >= StaticData.MAX_HAND_COUNT)
+        {
+            LogManager.Log("손이 꽉 참");
+            drawCount = 0;
+            return;
+        }
 
         if (drawPile.Count == 0)
         {
@@ -40,8 +38,8 @@ public partial class BattleManager : MonoBehaviour
                 drawCount = 0;
                 return;
             }
-            drawPile.AddRange(discardPile);
-            discardPile.Clear();
+            drawPile = Utils.ShuffleList(discardPile);
+            discardPile = new List<CardData>();
         }
 
         drawCount--;
@@ -54,12 +52,19 @@ public partial class BattleManager : MonoBehaviour
     /// <summary>
     /// 카드를 묘지로 보낸다
     /// </summary>
-    public void DiscardCard(ItemCard _itemCard)
+    public void DiscardCard(CardData _cardData)
     {
-        CardData dataDiscard = _itemCard.GetData();
-        popupBattle.DiscardCard(_itemCard);
-        handCards.Remove(dataDiscard);
-        discardPile.Add(dataDiscard);
+        discardPile.Add(_cardData);
+        handCards.Remove(_cardData);
+    }
+
+    /// <summary>
+    /// 카드를 소멸시킨다
+    /// </summary>
+    /// <param name="_cardData"></param>
+    public void ExhaustCard(CardData _cardData)
+    {
+        exhaustedCards.Add(_cardData);
     }
 
     public void SetEnergy(int _energy)
@@ -96,6 +101,8 @@ public partial class BattleManager : MonoBehaviour
     }
 
     public List<CardData> GetDrawPile() => drawPile;
+    public List<CardData> GetDiscardPile() => discardPile;
+    public List<CardData> GetExhaustPile() => exhaustedCards;
 
     public Character GetPlayer() => player;
     public List<Character> GetEnemyList() => enemyList;

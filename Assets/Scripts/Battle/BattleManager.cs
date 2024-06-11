@@ -41,7 +41,7 @@ public partial class BattleManager : MonoBehaviour
     private int initDrawCount = 5;
     private int drawCount = 0;
     private bool isDrawing = false;
-    private float drawDuration = 0.5f;
+    private float drawDuration = 0.25f;
     private float drawTimer = 0f;
 
     private int refillEnergy = 3;
