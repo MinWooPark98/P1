@@ -3,14 +3,14 @@ using UnityEditor;
 using System.Reflection;
 using System;
 
-[CustomEditor(typeof(CardData), true), CanEditMultipleObjects]
-public class CardDataEditor : Editor
+[CustomEditor(typeof(EnemyPattern), true), CanEditMultipleObjects]
+public class EnemyPatternEditor : Editor
 {
-    private CardData cardData;
+    private EnemyPattern enemyPattern;
 
     private void OnEnable()
     {
-        cardData = target as CardData;
+        enemyPattern = target as EnemyPattern;
     }
 
     public override void OnInspectorGUI()
@@ -22,11 +22,10 @@ public class CardDataEditor : Editor
         serializedObject.ApplyModifiedProperties();
     }
 
-    // CardData와 그 자식 클래스들의 변수를 모두 프로퍼티로 만듬
     private void DrawFields(object _targetObject, Type _type)
     {
         // 부모 클래스가 있으면, 부모 클래스의 변수부터 자식 클래스의 변수 순서로 진행
-        if (_type.BaseType != null && _type.BaseType == typeof(CardData))
+        if (_type.BaseType != null && _type.BaseType == typeof(EnemyPattern))
         {
             DrawFields(_targetObject, _type.BaseType);
         }
@@ -58,42 +57,19 @@ public class CardDataEditor : Editor
                                 
                                 if (GUILayout.Button("Add BuffPlayer", optionButtons))
                                 {
-                                    cardData.AddBuff(new BuffData(BUFF_TARGET.PLAYER, null, BUFF_TYPE.STR, -1, false, false));
+                                    enemyPattern.AddBuff(new BuffData(BUFF_TARGET.PLAYER, null, BUFF_TYPE.STR, -1, false, false));
                                     property.isExpanded = true;
                                 }
                                 if (GUILayout.Button("Add BuffEnemy", optionButtons))
                                 {
-                                    cardData.AddBuff(new BuffData(BUFF_TARGET.ENEMY, null, BUFF_TYPE.STR, -1, false, false));
+                                    enemyPattern.AddBuff(new BuffData(BUFF_TARGET.ENEMY, null, BUFF_TYPE.STR, -1, false, false));
                                     property.isExpanded = true;
                                 }
                                 GUILayout.EndHorizontal();
 
                                 if (GUILayout.Button("Removel All Buffs"))
                                 {
-                                    cardData.ClearBuffList();
-                                }
-
-                                EditorGUILayout.Space(14);
-                            }
-                            break;
-                        case "featureList":
-                            {
-                                if (property.isArray && property.arraySize == 0)
-                                {
-                                    property.isExpanded = false;
-                                }
-
-                                EditorGUILayout.Space(6);
-
-                                if (GUILayout.Button("Add FeatureList"))
-                                {
-                                    cardData.AddFeature(new CardData.CardFeature(CARD_FEATURE.EXHAUST, -1));
-                                    property.isExpanded = true;
-                                }
-
-                                if (GUILayout.Button("Removel All Features"))
-                                {
-                                    cardData.ClearFeatureList();
+                                    enemyPattern.ClearBuffList();
                                 }
 
                                 EditorGUILayout.Space(14);

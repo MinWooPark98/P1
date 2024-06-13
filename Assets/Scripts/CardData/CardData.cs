@@ -5,12 +5,12 @@ using UnityEngine;
 public abstract class CardData : ScriptableObject
 {
     [Serializable]
-    public class CardFeature
+    public struct CardFeature
     {
         [SerializeField]
-        private CARD_FEATURE type;
+        public CARD_FEATURE type;
         [SerializeField]
-        private int value;
+        public int value;
 
         public CardFeature(CARD_FEATURE _type, int _value)
         {

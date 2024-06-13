@@ -10,29 +10,29 @@ using System.Linq;
 [CustomPropertyDrawer(typeof(BuffData))]
 public class BuffDataEditor : PropertyDrawer
 {
-    public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+    public override void OnGUI(Rect _position, SerializedProperty _property, GUIContent _label)
     {
-        EditorGUI.BeginProperty(position, label, property);
+        EditorGUI.BeginProperty(_position, _label, _property);
 
-        position = EditorGUI.IndentedRect(position);
-        SerializedProperty endProperty = property.GetEndProperty();
+        _position = EditorGUI.IndentedRect(_position);
+        SerializedProperty endProperty = _property.GetEndProperty();
 
-        SerializedProperty buffTarget = property.FindPropertyRelative("target");
-        SerializedProperty buffType = property.FindPropertyRelative("type");
-        SerializedProperty applySelf = property.FindPropertyRelative("applySelf");
-        SerializedProperty applyAllEnemies = property.FindPropertyRelative("applyAllEnemies");
+        SerializedProperty buffTarget = _property.FindPropertyRelative("target");
+        SerializedProperty buffType = _property.FindPropertyRelative("type");
+        SerializedProperty applySelf = _property.FindPropertyRelative("applySelf");
+        SerializedProperty applyAllEnemies = _property.FindPropertyRelative("applyAllEnemies");
 
         float lineHeight = EditorGUIUtility.singleLineHeight;
-        float yOffset = position.y;
+        float yOffset = _position.y;
 
-        SerializedProperty currentProperty = property.Copy();
+        SerializedProperty currentProperty = _property.Copy();
         currentProperty.NextVisible(true);
 
         while (!SerializedProperty.EqualContents(currentProperty, endProperty))
         {
             if (currentProperty.propertyPath == buffTarget.propertyPath)
             {
-                EditorGUI.PropertyField(new Rect(position.x, yOffset, position.width, lineHeight), currentProperty);
+                EditorGUI.PropertyField(new Rect(_position.x, yOffset, _position.width, lineHeight), currentProperty);
                 yOffset += lineHeight + EditorGUIUtility.standardVerticalSpacing;
 
                 currentProperty.NextVisible(false);
@@ -62,7 +62,7 @@ public class BuffDataEditor : PropertyDrawer
                 {
                     selectedIndex = 0;
                 }
-                selectedIndex = EditorGUI.Popup(new Rect(position.x, yOffset, position.width, lineHeight), "type", selectedIndex, buffTypeOptions);
+                selectedIndex = EditorGUI.Popup(new Rect(_position.x, yOffset, _position.width, lineHeight), "type", selectedIndex, buffTypeOptions);
                 buffType.enumValueIndex = System.Array.IndexOf(allBuffTypes.Select((value) => value.ToString()).ToArray(), buffTypeOptions[selectedIndex]);
 
                 yOffset += lineHeight + EditorGUIUtility.standardVerticalSpacing;
@@ -77,7 +77,7 @@ public class BuffDataEditor : PropertyDrawer
             }
             else
             {
-                EditorGUI.PropertyField(new Rect(position.x, yOffset, position.width, lineHeight), currentProperty, true);
+                EditorGUI.PropertyField(new Rect(_position.x, yOffset, _position.width, lineHeight), currentProperty, true);
                 yOffset += lineHeight + EditorGUIUtility.standardVerticalSpacing;
                 currentProperty.NextVisible(false);
             }
@@ -86,12 +86,12 @@ public class BuffDataEditor : PropertyDrawer
         EditorGUI.EndProperty();
     }
 
-    public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
+    public override float GetPropertyHeight(SerializedProperty _property, GUIContent _label)
     {
         float totalHeight = 0;
-        SerializedProperty endProperty = property.GetEndProperty();
+        SerializedProperty endProperty = _property.GetEndProperty();
 
-        SerializedProperty currentProperty = property.Copy();
+        SerializedProperty currentProperty = _property.Copy();
         currentProperty.NextVisible(true);
 
         while (!SerializedProperty.EqualContents(currentProperty, endProperty))
