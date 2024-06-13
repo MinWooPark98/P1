@@ -261,13 +261,6 @@ public class WindowEnemyPattern : EditorWindow
     private void DrawState(EnemyPatternState _state)
     {
         GUI.Box(_state.rect, _state.name.ToString());
-        if (Event.current.type == EventType.MouseDown && _state.rect.Contains(Event.current.mousePosition))
-        {
-            if (Event.current.button == 0)
-            {
-                SetSelectedState(_state);
-            }
-        }
     }
 
     private void DrawStateWindow(int _index)
@@ -419,12 +412,12 @@ public class WindowEnemyPattern : EditorWindow
 
         Handles.DrawLine(_startPos, _endPos);
 
-        Vector3 direction = (_endPos - _startPos).normalized;
-        Vector3 right = new Vector3(-direction.y, direction.x * 8f);
-        Vector3 arrowHeadPoint = _endPos - direction * 16f;
+        float angle = Mathf.Rad2Deg * Mathf.Atan2(_endPos.y - _startPos.y, _startPos.x - _endPos.x);
+        Vector3 right = new Vector3(Mathf.Cos((angle - 30f) * Mathf.Deg2Rad), -Mathf.Sin((angle - 30f) * Mathf.Deg2Rad));
+        Vector3 left = new Vector3(Mathf.Cos((angle + 30f) * Mathf.Deg2Rad), -Mathf.Sin((angle + 30f) * Mathf.Deg2Rad));
 
-        Handles.DrawLine(_endPos, arrowHeadPoint + right);
-        Handles.DrawLine(_endPos, arrowHeadPoint - right);
+        Handles.DrawLine(_endPos, _endPos + right * 20f);
+        Handles.DrawLine(_endPos, _endPos + left * 20f);
 
         Handles.color = Color.white;
     }
