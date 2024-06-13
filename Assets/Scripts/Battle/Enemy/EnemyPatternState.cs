@@ -2,23 +2,22 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[System.Serializable]
-public abstract class EnemyPatternState
+public abstract class EnemyPatternState : ScriptableObject
 {
     public bool selfTransition = false;
-    public List<Transition> transitions = new List<Transition>();
+    public List<EnemyPatternTransition> transitions = new List<EnemyPatternTransition>();
 
     public Rect rect;
 }
 
-[System.Serializable]
+[CreateAssetMenu(fileName = "NormalPatternState", menuName = "Scriptable Object/EnemyPatternState/State/Normal")]
 public class EnemyNormalPatternState : EnemyPatternState
 {
     public EnemyPattern pattern;
 
 }
 
-[System.Serializable]
+[CreateAssetMenu(fileName = "RandomPatternState", menuName = "Scriptable Object/EnemyPatternState/State/Normal")]
 public class EnemyRandomPatternState : EnemyPatternState
 {
     [System.Serializable]
@@ -31,8 +30,20 @@ public class EnemyRandomPatternState : EnemyPatternState
     public List<RandomPattern> randomPatterns;
 }
 
-[System.Serializable]
-public class Transition
+
+[CreateAssetMenu(fileName = "EnemyPatternTransition", menuName = "Scriptable Object/EnemyPatternState/Transition")]
+public class EnemyPatternTransition : ScriptableObject
 {
+    [System.Serializable]
+    public class Condition
+    {
+        public ENEMY_PATTERN_CONDITION condition;
+        public float value;
+    }
+
+    public Condition condition;
     public EnemyPatternState targetState;
+
+    public Vector2 startPos;
+    public Vector2 endPos;
 }

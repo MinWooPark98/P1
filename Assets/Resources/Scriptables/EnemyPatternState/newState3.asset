@@ -9,8 +9,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 96690b1e00a794242a71b0961348165a, type: 3}
-  m_Name: test
-  m_EditorClassIdentifier: 
-  damage: 0
-  buffList: []
+  m_Script: {fileID: 0}
+  m_Name: newState3
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyRandomPatternState
+  selfTransition: 0
+  transitions: []
+  rect:
+    serializedVersion: 2
+    x: 761
+    y: 373
+    width: 400
+    height: 0
+  randomPatterns: []

@@ -19,9 +19,3 @@ public class EnemyPattern : ScriptableObject
         buffList.Clear();
     }
 }
-
-[System.Serializable]
-public class EnemyPatternTransition
-{
-    public EnemyPattern nextPattern;
-}

@@ -44,12 +44,12 @@ public class BuffDataEditor : PropertyDrawer
                 string[] buffTypeOptions = null;
                 switch ((BUFF_TARGET)buffTarget.intValue)
                 {
-                    case BUFF_TARGET.PLAYER:
+                    case BUFF_TARGET.Player:
                         {
                             buffTypeOptions = Array.FindAll(allBuffTypes, (value) => (((int)value >= 11000 && (int)value < 12000) || ((int)value >= 12000 && (int)value < 13000))).Select((value) => value.ToString()).ToArray();
                         }
                         break;
-                    case BUFF_TARGET.ENEMY:
+                    case BUFF_TARGET.Enemy:
                         {
                             buffTypeOptions = Array.FindAll(allBuffTypes, (value) => (((int)value >= 11000 && (int)value < 12000) || ((int)value >= 13000 && (int)value < 14000))).Select((value) => value.ToString()).ToArray();
                         }
@@ -70,7 +70,7 @@ public class BuffDataEditor : PropertyDrawer
                 currentProperty.NextVisible(false);
             }
             else if (currentProperty.propertyPath == applyAllEnemies.propertyPath &&
-                    (buffTarget.intValue == (int)BUFF_TARGET.PLAYER || applySelf.boolValue == true))
+                    (buffTarget.intValue == (int)BUFF_TARGET.Player || applySelf.boolValue == true))
             {
                 currentProperty.NextVisible(false);
                 continue;

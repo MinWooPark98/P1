@@ -34,23 +34,23 @@ public enum CARD_FEATURE
 /// </summary>
 public enum BUFF_TARGET
 {
-    PLAYER,                     // 플레이어 대상으로 버프를 주고 싶은 경우  <==  공용 버프 + 플레이어 전용 버프
-    ENEMY,                      // 적 대상으로 버프를 주고 싶은 경우  <==  공용 버프 + 적 전용 버프
+    Player,                     // 플레이어 대상으로 버프를 주고 싶은 경우  <==  공용 버프 + 플레이어 전용 버프
+    Enemy,                      // 적 대상으로 버프를 주고 싶은 경우  <==  공용 버프 + 적 전용 버프
 }
 
 public enum BUFF_TYPE
 {
     // 공용 버프 (11000 ~ 11999)
-    STR = 11000,                    // 힘
-    DEX = 11001,                    // 민첩
-    DEF = 11002,                    // 방어도
-    VULNERABLE = 11003,             // 취약
-    WEAK = 11004,                   // 약화
+    Str = 11000,                    // 힘
+    Dex = 11001,                    // 민첩
+    Def = 11002,                    // 방어도
+    Vulnerable = 11003,             // 취약
+    Weak = 11004,                   // 약화
 
     // 플레이어 전용 버프 (12000 ~ 12999)
-    CONFUSED = 12000,                       // 혼란 = 카드 비용 0 ~ 3 랜덤
-    ENTANGLED = 12001,                      // 속박 = 공격 불가
-    FRAIL = 12002,                          // 손상 = 획득 방어도 25% 감소
+    Confused = 12000,                       // 혼란 = 카드 비용 0 ~ 3 랜덤
+    Entangled = 12001,                      // 속박 = 공격 불가
+    Frail = 12002,                          // 손상 = 획득 방어도 25% 감소
 
     // 적 전용 버프 (13000 ~ 13999)
     testEnemy1 = 13000,
@@ -81,3 +81,12 @@ public enum BUFF_TYPE
 //    testEnemy2,
 //    MAX,
 //}
+
+public enum ENEMY_PATTERN_CONDITION
+{
+    None = -1,
+    TurnCount,
+    HpMoreThan,             // (0 ~ 1)
+    HpLessThan,             // (0 ~ 1)
+}
+

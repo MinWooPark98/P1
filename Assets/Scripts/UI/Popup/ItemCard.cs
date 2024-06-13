@@ -193,12 +193,12 @@ public class ItemCard : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         {
             switch (data.buffList[i].target)
             {
-                case BUFF_TARGET.PLAYER:
+                case BUFF_TARGET.Player:
                     {
                         player.AddBuff(data.buffList[i]);
                     }
                     break;
-                case BUFF_TARGET.ENEMY:
+                case BUFF_TARGET.Enemy:
                     {
                         if (data.buffList[i].applyAllEnemies)
                         {

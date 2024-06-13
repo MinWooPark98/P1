@@ -58,12 +58,12 @@ public class CardDataEditor : Editor
                                 
                                 if (GUILayout.Button("Add BuffPlayer", optionButtons))
                                 {
-                                    cardData.AddBuff(new BuffData(BUFF_TARGET.PLAYER, null, BUFF_TYPE.STR, -1, false, false));
+                                    cardData.AddBuff(new BuffData(BUFF_TARGET.Player, null, BUFF_TYPE.Str, -1, false, false));
                                     property.isExpanded = true;
                                 }
                                 if (GUILayout.Button("Add BuffEnemy", optionButtons))
                                 {
-                                    cardData.AddBuff(new BuffData(BUFF_TARGET.ENEMY, null, BUFF_TYPE.STR, -1, false, false));
+                                    cardData.AddBuff(new BuffData(BUFF_TARGET.Enemy, null, BUFF_TYPE.Str, -1, false, false));
                                     property.isExpanded = true;
                                 }
                                 GUILayout.EndHorizontal();

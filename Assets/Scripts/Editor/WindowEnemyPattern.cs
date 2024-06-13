@@ -6,19 +6,36 @@ using UnityEngine.UIElements;
 
 public class WindowEnemyPattern : EditorWindow
 {
-    private List<EnemyPatternState> states = new List<EnemyPatternState>();
+    private EnemyInfo target = null;
+
     private EnemyPatternState selectedState = null;
+    private EnemyPatternTransition selectedTransition = null;
     private EnemyPatternState transitionStartState = null;
     private Vector2 mousePosition;
 
-    [MenuItem("Window/Enemy Pattern Editor")]
-    public static void ShowWindow()
+    private static Vector2 MIN_SIZE = new Vector2(1600, 800);
+
+    private string FolderPath
     {
-        GetWindow<WindowEnemyPattern>("Enemy Pattern Editor");
+        get => string.Format("Assets/Resources/Scriptables/EnemyPatternState/" + target.name);
+    }
+
+    public static void Open(EnemyInfo _target)
+    {
+        WindowEnemyPattern window = GetWindow<WindowEnemyPattern>("Enemy Pattern State");
+        window.target = _target;
+        window.minSize = MIN_SIZE;
+        window.Show();
     }
 
     private void OnGUI()
     {
+        if (target == null)
+        {
+            Close();
+            return;
+        }
+
         Event e = Event.current;
         mousePosition = e.mousePosition;
 
@@ -41,8 +58,25 @@ public class WindowEnemyPattern : EditorWindow
             if (e.button == 0)
             {
                 EnemyPatternState stateClicked = null;
-                foreach (var state in states)
+                EnemyPatternTransition transitionClicked = null;
+                bool isTransitionSelected = false;
+                foreach (var state in target.patternStates)
                 {
+                    foreach (var transition in state.transitions)
+                    {
+                        if (HandleUtility.DistancePointLine(e.mousePosition, transition.startPos, transition.endPos) < 5f)
+                        {
+                            isTransitionSelected = true;
+                            transitionClicked = transition;
+                            break;
+                        }
+                    }
+
+                    if (isTransitionSelected)
+                    {
+                        break;
+                    }
+
                     if (state.rect.Contains(mousePosition))
                     {
                         stateClicked = state;
@@ -59,7 +93,7 @@ public class WindowEnemyPattern : EditorWindow
                         // 이미 연결되어있지 않아야 연결
                         if (transitionStartState.transitions.Exists((transition) => transition.targetState == stateClicked) == false)
                         {
-                            transitionStartState.transitions.Add(new Transition { targetState = stateClicked });
+                            AddTransition(transitionStartState, stateClicked);
                         }
                         else
                         {
@@ -74,10 +108,15 @@ public class WindowEnemyPattern : EditorWindow
                         SetSelectedState(stateClicked);
                     }
                 }
+                else if (transitionClicked != null)
+                {
+                    SetSelectedTransition(transitionClicked);
+                }
                 else
                 {
                     transitionStartState = null;
                     SetSelectedState(null);
+                    //SetSelectedTransition(null);
                 }
             }
 
@@ -87,12 +126,13 @@ public class WindowEnemyPattern : EditorWindow
                 // 트랜지션 연결 중이 아니라면
                 if (transitionStartState == null)
                 {
-                    foreach (var state in states)
+                    foreach (var state in target.patternStates)
                     {
                         if (state.rect.Contains(mousePosition))
                         {
                             GenericMenu menu = new GenericMenu();
                             menu.AddItem(new GUIContent("Add Transition"), false, StartTransition, state);
+                            menu.AddItem(new GUIContent("Set This State to First"), false, SetFirstState, state);
                             menu.ShowAsContext();
 
                             e.Use();
@@ -112,7 +152,7 @@ public class WindowEnemyPattern : EditorWindow
             }
         }
 
-        foreach (var state in states)
+        foreach (var state in target.patternStates)
         {
             DrawState(state);
         }
@@ -124,7 +164,7 @@ public class WindowEnemyPattern : EditorWindow
         }
 
         BeginWindows();
-        for (int i = 0; i < states.Count; i++)
+        for (int i = 0; i < target.patternStates.Count; i++)
         {
             DrawStateWindow(i);
         }
@@ -138,56 +178,89 @@ public class WindowEnemyPattern : EditorWindow
 
     private void SetSelectedState(EnemyPatternState _state)
     {
-        if (_state == null)
+        if (_state != null)
         {
-            GUI.FocusControl(null);
+            SetSelectedTransition(null);
         }
+        GUI.FocusControl(null);
         selectedState = _state;
     }
 
-    private void RemoveSelectedState()
+    private void SetSelectedTransition(EnemyPatternTransition _transition)
     {
-        states.Remove(selectedState);
-        for (int i = 0; i < states.Count; i++)
+        if (_transition != null)
         {
-            for (int j = 0; j < states[i].transitions.Count; j++)
-            {
-                if (states[i].transitions[j].targetState == selectedState)
-                {
-                    states[i].transitions.RemoveAt(j);
-                    j--;
-                }
-            }
+            SetSelectedState(null);
         }
-        selectedState = null;
+        GUI.FocusControl(null);
+        selectedTransition = _transition;
     }
 
     private void AddNormalPatternState(object _mousePositionObject)
     {
         Vector2 mousePosition = (Vector2)_mousePositionObject;
-        EnemyPatternState newState = new EnemyNormalPatternState { rect = new Rect(mousePosition.x, mousePosition.y, 220, 80) };
-        states.Add(newState);
+        EnemyPatternState newState = ScriptableObject.CreateInstance<EnemyNormalPatternState>();
+        newState.rect = new Rect(mousePosition.x, mousePosition.y, 220, 80);
+        UtilsEditor.CreateFolderIfNotExists(FolderPath);
+        UtilsEditor.CreateAsset(newState, string.Format(FolderPath + "newState.asset"));
+        target.patternStates.Add(newState);
     }
     private void AddRandomPatternState(object _mousePositionObject)
     {
         Vector2 mousePosition = (Vector2)_mousePositionObject;
-        EnemyPatternState newState = new EnemyRandomPatternState { rect = new Rect(mousePosition.x, mousePosition.y, 400, 0) };
-        states.Add(newState);
+        EnemyPatternState newState = ScriptableObject.CreateInstance<EnemyRandomPatternState>();
+        newState.rect = new Rect(mousePosition.x, mousePosition.y, 400, 0);
+        UtilsEditor.CreateFolderIfNotExists(FolderPath);
+        UtilsEditor.CreateAsset(newState, string.Format(FolderPath + "newState.asset"));
+        target.patternStates.Add(newState);
+    }
+
+    private void AddTransition(EnemyPatternState _startState, EnemyPatternState _targetState)
+    {
+        EnemyPatternTransition newTransition = ScriptableObject.CreateInstance<EnemyPatternTransition>();
+        newTransition.targetState = _targetState;
+        AssetDatabase.AddObjectToAsset(newTransition, _startState);
+        AssetDatabase.SaveAssets();
+        _startState.transitions.Add(newTransition);
+    }
+    private void RemoveSelectedState()
+    {
+        target.patternStates.Remove(selectedState);
+        for (int i = 0; i < target.patternStates.Count; i++)
+        {
+            for (int j = 0; j < target.patternStates[i].transitions.Count; j++)
+            {
+                if (target.patternStates[i].transitions[j].targetState == selectedState)
+                {
+                    target.patternStates[i].transitions.RemoveAt(j);
+                    AssetDatabase.RemoveObjectFromAsset(target.patternStates[i].transitions[j]);
+                    j--;
+                }
+            }
+        }
+        AssetDatabase.DeleteAsset(string.Format(FolderPath + selectedState.name + ".asset"));
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
+
+        selectedState = null;
+    }
+
+    private void SetFirstState(object _stateObject)
+    {
+        EnemyPatternState state = (EnemyPatternState)_stateObject;
+        target.patternStates.Remove(state);
+        target.patternStates.Insert(0, state);
     }
 
     private void StartTransition(object _stateObject)
     {
         EnemyPatternState state = (EnemyPatternState)_stateObject;
-        if (state.selfTransition)
-        {
-            return;
-        }
         transitionStartState = state;
     }
 
     private void DrawState(EnemyPatternState _state)
     {
-        GUI.Box(_state.rect, _state.GetType().ToString());
+        GUI.Box(_state.rect, _state.name.ToString());
         if (Event.current.type == EventType.MouseDown && _state.rect.Contains(Event.current.mousePosition))
         {
             if (Event.current.button == 0)
@@ -199,8 +272,13 @@ public class WindowEnemyPattern : EditorWindow
 
     private void DrawStateWindow(int _index)
     {
-        EnemyPatternState state = states[_index];
-        state.rect = GUI.Window(_index, state.rect, id => DrawStateContents(state), state.GetType().ToString());
+        EnemyPatternState state = target.patternStates[_index];
+        if (_index == 0)
+        {
+            GUI.color = Color.red;
+        }
+        state.rect = GUI.Window(_index, state.rect, id => DrawStateContents(state), state.name.ToString());
+        GUI.color = Color.white;
 
         foreach (var transition in state.transitions)
         {
@@ -219,9 +297,49 @@ public class WindowEnemyPattern : EditorWindow
                 startPos = GetNearestPosOnBorder(startPos, angle, state.rect);
                 endPos = GetNearestPosOnBorder(endPos, 180f + angle, transition.targetState.rect);
 
-                DrawTransition(startPos, endPos);
+                transition.startPos = startPos;
+                transition.endPos = endPos;
+
+                DrawArrow(startPos, endPos, transition == selectedTransition ? Color.yellow : Color.white);
+
+                if (transition == selectedTransition)
+                {
+                    Vector2 size = new Vector2(220f, 100f);
+                    Vector2 bottomPos = 0.5f * (startPos + endPos) - size * 0.5f - new Vector2(0f, 10f);
+                    Rect rect = new Rect();
+                    rect.center = new Vector2(bottomPos.x, bottomPos.y - size.y * 0.5f);
+                    rect.size = size;
+                    DrawTransitionInfo(transition, rect);
+                }
             }
         }
+    }
+
+    // rect위치와 크기에 Transition 정보 보여줌
+    private void DrawTransitionInfo(EnemyPatternTransition _transition, Rect _rect)
+    {
+        GUI.Box(_rect, "Transition Info");
+        _rect = GUI.Window(target.patternStates.Count + 1, _rect, id => DrawTransitionContents(_transition), "Transition Info");
+    }
+
+    private void DrawTransitionContents(EnemyPatternTransition _transition)
+    {
+        GUILayout.BeginVertical();
+
+        float originalLabelWidth = EditorGUIUtility.labelWidth;
+        EditorGUIUtility.labelWidth = 60f;
+
+        EditorGUILayout.BeginHorizontal();
+        _transition.condition.condition = (ENEMY_PATTERN_CONDITION)EditorGUILayout.EnumPopup("Condition", _transition.condition.condition);
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
+        _transition.condition.value = EditorGUILayout.FloatField("Value", _transition.condition.value);
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUIUtility.labelWidth = originalLabelWidth;
+
+        GUILayout.EndVertical();
     }
 
     private Vector2 GetNearestPosOnBorder(Vector2 _pos, float _angle, Rect _border)
@@ -270,7 +388,7 @@ public class WindowEnemyPattern : EditorWindow
                 state.randomPatterns[i].pattern = EditorGUILayout.ObjectField("Pattern", state.randomPatterns[i].pattern, typeof(EnemyPattern), false) as EnemyPattern;
                 state.randomPatterns[i].weight = EditorGUILayout.FloatField("Weight", state.randomPatterns[i].weight);
 
-                if (GUILayout.Button("X"))
+                if (GUILayout.Button("Delete", new GUILayoutOption[] { GUILayout.Width(50f) }))
                 {
                     state.randomPatterns.RemoveAt(i);
                 }
@@ -295,23 +413,19 @@ public class WindowEnemyPattern : EditorWindow
         GUI.DragWindow();
     }
 
-    private void DrawTransition(Rect _startRect, Rect _endRect)
+    private void DrawArrow(Vector3 _startPos, Vector3 _endPos, Color _color)
     {
-        Vector3 startPos = new Vector3(_startRect.x + _startRect.width / 2, _startRect.y + _startRect.height / 2, 0);
-        Vector3 endPos = new Vector3(_endRect.x + _endRect.width / 2, _endRect.y + _endRect.height / 2, 0);
+        Handles.color = _color;
 
-        DrawTransition(startPos, endPos);
-    }
-
-    private void DrawTransition(Vector3 _startPos, Vector3 _endPos)
-    {
         Handles.DrawLine(_startPos, _endPos);
 
         Vector3 direction = (_endPos - _startPos).normalized;
-        Vector3 right = new Vector3(-direction.y, direction.x) * 5;
-        Vector3 arrowHeadPoint = _endPos - direction * 10;
+        Vector3 right = new Vector3(-direction.y, direction.x * 8f);
+        Vector3 arrowHeadPoint = _endPos - direction * 16f;
 
         Handles.DrawLine(_endPos, arrowHeadPoint + right);
         Handles.DrawLine(_endPos, arrowHeadPoint - right);
+
+        Handles.color = Color.white;
     }
 }
