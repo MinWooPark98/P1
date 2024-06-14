@@ -85,7 +85,7 @@ public class CharacterInfo : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
                     strBuff = string.Format(strBuff + "\n");
                 }
 
-                strBuff += string.Format(_buffs[i].value < 0 ? string.Format(strBuff + _buffs[i].type) : string.Format(strBuff + _buffs[i].type + " " + _buffs[i].value)); 
+                strBuff = _buffs[i].value < 0 ? string.Format(strBuff + _buffs[i].type) : string.Format(strBuff + _buffs[i].type + " " + _buffs[i].value); 
             }
         }
         textBuff.text = strBuff;

@@ -9,6 +9,7 @@ public class EnemyPatternTransition : ScriptableObject
     {
         public ENEMY_PATTERN_CONDITION condition;
         public float value;
+        public int priority;
     }
 
     public Condition condition;

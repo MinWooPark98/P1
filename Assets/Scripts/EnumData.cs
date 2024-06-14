@@ -40,21 +40,89 @@ public enum BUFF_TARGET
 
 public enum BUFF_TYPE
 {
-    // 공용 버프 (11000 ~ 11999)
-    Str = 11000,                    // 힘
-    Dex = 11001,                    // 민첩
-    Def = 11002,                    // 방어도
-    Vulnerable = 11003,             // 취약
-    Weak = 11004,                   // 약화
+    // 공용 (11000 ~ 11999)
+    // 버프
+    Artifact = 11000,
+    Barricade,
+    Buffer,
+    Dexterity,
+    DrawCard,
+    Energized,
+    Focus,
+    Intangible,
+    Mantra,
+    Metallicize,
+    NextTurnBlock,
+    PlatedArmor,
+    Regenerate,
+    Ritual,
+    Strength,
+    Thorns,
+    Vigor,
 
-    // 플레이어 전용 버프 (12000 ~ 12999)
-    Confused = 12000,                       // 혼란 = 카드 비용 0 ~ 3 랜덤
-    Entangled = 12001,                      // 속박 = 공격 불가
-    Frail = 12002,                          // 손상 = 획득 방어도 25% 감소
+    // 공용 디버프
+    Frail,                          // 손상 = 획득 방어도 25% 감소
+    Vulnerable,                     // 취약
+    Weak,                           // 약화
 
-    // 적 전용 버프 (13000 ~ 13999)
-    testEnemy1 = 13000,
-    testEnemy2 = 13001,
+
+    // 플레이어 전용 (12000 ~ 12999)
+    // 버프
+    Accuracy = 12000,
+    AfterImage,
+    Amplify,
+    BattleHymn,
+    Berserk,
+    Blasphemer,
+    Blur,
+    Brutality,
+    Burst,
+    Collect,
+    Combust,
+    Corruption,
+    CreativeAI,
+    DarkEmbrace,
+    DemonForm,
+    Deva,
+    Devotion,
+    DoubleDamage,
+    Duplicatioin,
+    EchoForm,
+    Electro,
+    Envenom,
+    Equilibrium,
+
+    // 디버프
+    Confused,                       // 혼란 = 카드 비용 0 ~ 3 랜덤
+    Entangled,                      // 속박 = 공격 불가
+
+
+    // 적 전용 (13000 ~ 13999)
+    // 버프 
+    Angry = 13000,                  // 분노                            
+    BackAttack,
+    BeatOfDeath,
+    Curiosity,
+    CurlUp,                         // 몸 말기
+    Enrage,
+    Explosive,
+    Fanding,
+    Invincible,
+    LifeLink,
+    Malleable,
+    Minion,
+    ModeShift,
+    PainfulStabs,
+    Reactive,
+    SharpHide,
+    Shifting,
+    Split,
+    SporeCloud,
+    Statsis,
+    StrengthUp,
+    Thievery,                       // 도둑질
+    TimeWarp,
+    Unawakened,
 }
 
 //public enum BUFF_PUBLIC
@@ -84,8 +152,8 @@ public enum BUFF_TYPE
 
 public enum ENEMY_PATTERN_CONDITION
 {
-    None = -1,
-    TurnCount,
+    None,                   // 조건 없음
+    TurnCount,              // n턴째
     HpMoreThan,             // (0 ~ 1)
     HpLessThan,             // (0 ~ 1)
 }

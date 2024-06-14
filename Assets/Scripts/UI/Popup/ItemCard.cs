@@ -155,7 +155,7 @@ public class ItemCard : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         BattleManager.Instance.UseEnergy(data.energy);
 
         Character player = BattleManager.Instance.GetPlayer();
-        List<Character> enemyList = BattleManager.Instance.GetEnemyList();
+        List<Enemy> enemyList = BattleManager.Instance.GetEnemyList();
 
         switch (data.type)
         {

@@ -31,6 +31,9 @@ public class PopupBattle : Popup
     private Transform posUsingCard = null;
 
     [SerializeField]
+    private Button btnTurnEnd = null;
+
+    [SerializeField]
     private Graphic[] graphicsAnnouncement = null;
     [SerializeField]
     private TMP_Text textAnnouncement = null;
@@ -195,7 +198,7 @@ public class PopupBattle : Popup
                         else if (Input.GetMouseButtonDown(0))
                         {
                             // popupbattle로 옮긴 후에 에너미 리스트 순회하면서 Utils.mouse rect 검사 후 cards[i].Use(target);
-                            List<Character> enemyList = BattleManager.Instance.GetEnemyList();
+                            List<Enemy> enemyList = BattleManager.Instance.GetEnemyList();
                             for (int j = 0; j < enemyList.Count; j++)
                             {
                                 if (Utils.IsMouseOverRecttTransform(enemyList[j].GetCharacterInfo().GetComponent<RectTransform>()) == true)
@@ -244,6 +247,11 @@ public class PopupBattle : Popup
     public void SetEnergy(int _energy, int _refillEnergy)
     {
         textEnergy.text = string.Format(_energy + "/" +  _refillEnergy);
+    }
+
+    public void ActivateBtnTurnEnd(bool _active)
+    {
+        btnTurnEnd.interactable = _active;
     }
 
     public void TurnEnd()

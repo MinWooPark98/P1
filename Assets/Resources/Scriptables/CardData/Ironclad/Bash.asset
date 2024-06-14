@@ -21,7 +21,7 @@ MonoBehaviour:
   buffList:
   - target: 1
     iconName: 
-    type: 11003
+    type: 11018
     value: 2
     applySelf: 0
     applyAllEnemies: 0

@@ -15,7 +15,7 @@ public struct BuffData
     public BUFF_TYPE type;
     public int value;
     public bool applySelf;
-    public bool applyAllEnemies;
+    public bool applyAllEnemies;                    // 플레이어가 적 전체에게 적용할 것인가 (적은 본인에게만 버프 적용 가능)
 
     /// <summary>
     /// 유니티 에디터에서 버프 만들기 쉽게 하기 위한 용도의 생성자, 이 외에는 사용하지 않음

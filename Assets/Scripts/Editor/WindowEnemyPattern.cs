@@ -56,6 +56,21 @@ public class WindowEnemyPattern : EditorWindow
         window.Show();
     }
 
+    private void OnDestroy()
+    {
+        foreach (var box in listStateBox)
+        {
+            EditorUtility.SetDirty(box.state);
+            AssetDatabase.SaveAssets();
+        }
+
+        foreach (var line in listTransitionLine)
+        {
+            EditorUtility.SetDirty(line.transition);
+            AssetDatabase.SaveAssets();
+        }
+    }
+
     private void OnGUI()
     {
         if (target == null)
@@ -72,7 +87,15 @@ public class WindowEnemyPattern : EditorWindow
 
         if (transitionStartStateBox != null)
         {
-            Handles.DrawLine(transitionStartStateBox.rect.center, mousePosition);
+            if (transitionStartStateBox.rect.Contains(mousePosition))
+            {
+                float radius = 40f; 
+                Handles.DrawWireDisc(transitionStartStateBox.rect.center + new Vector2(0f, 0.5f * transitionStartStateBox.rect.height), Vector3.forward, radius);
+            }
+            else
+            {
+                Handles.DrawLine(transitionStartStateBox.rect.center, mousePosition);
+            }
             shouldRepaint = true;
         }
 
@@ -328,7 +351,11 @@ public class WindowEnemyPattern : EditorWindow
         AssetDatabase.Refresh();
         _startBox.state.transitions.Add(newTransition);
 
-        AddTransitionLine(_startBox, _targetBox, newTransition);
+        // self transition이 아닐 때만 line 추가
+        if (_startBox != _targetBox)
+        {
+            AddTransitionLine(_startBox, _targetBox, newTransition);
+        }
     }
 
     private void RemoveSelectedStateBox()
@@ -356,29 +383,34 @@ public class WindowEnemyPattern : EditorWindow
             RemoveTransitionLine(linesToRemove[i]);
         }
 
-        EnemyPatternState stateToRemove = _box.state;
+        RemoveState(_box.state);
+        listStateBox.Remove(_box);
+    }
 
-        target.patternStates.Remove(stateToRemove);
+    private void RemoveState(EnemyPatternState _state)
+    {
+        target.patternStates.Remove(_state);
 
-        AssetDatabase.DeleteAsset(string.Format(FolderPath + _box.state.name + ".asset"));
+        AssetDatabase.DeleteAsset(string.Format(FolderPath + _state.name + ".asset"));
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
-
-        listStateBox.Remove(_box);
     }
 
     private void RemoveTransitionLine(TransitionLine _line)
     {
-        AssetDatabase.RemoveObjectFromAsset(_line.transition);
-        AssetDatabase.SaveAssets();
-        AssetDatabase.Refresh();
+        RemoveTransition(_line.transition);
+        listTransitionLine.Remove(_line);
+    }
 
+    private void RemoveTransition(EnemyPatternTransition _transition)
+    {
         for (int i = 0; i < target.patternStates.Count; i++)
         {
-            target.patternStates[i].transitions.Remove(_line.transition);
+            target.patternStates[i].transitions.Remove(_transition);
         }
-
-        listTransitionLine.Remove(_line);
+        AssetDatabase.RemoveObjectFromAsset(_transition);
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
     }
 
     private void SetFirstState(object _stateBoxObject)
@@ -447,13 +479,7 @@ public class WindowEnemyPattern : EditorWindow
 
             if (line == selectedTransitionLine)
             {
-                Vector2 size = new Vector2(220f, 100f);
-                Vector2 bottomPos = 0.5f * (startPos + endPos) - size * 0.5f - new Vector2(0f, 10f);
-                Rect rect = new Rect();
-                rect.center = new Vector2(bottomPos.x, bottomPos.y - size.y * 0.5f);
-                rect.size = size;
-
-                transitionInfoBox.rect = rect;
+                transitionInfoBox.rect.center = 0.5f * (startPos + endPos) - new Vector2(0f, transitionInfoBox.rect.size.y * 0.5f + 10f);
                 transitionInfoBox.transition = line.transition;
             }
         }
@@ -464,19 +490,62 @@ public class WindowEnemyPattern : EditorWindow
         GUILayout.BeginVertical();
 
         float originalLabelWidth = EditorGUIUtility.labelWidth;
+        float totalHeight = 0f;
         EditorGUIUtility.labelWidth = 60f;
         if (_stateBox.state.GetType() == typeof(EnemyNormalPatternState))
         {
+            totalHeight += EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
+
+            EnemyNormalPatternState state = (EnemyNormalPatternState)_stateBox.state;            
+            EnemyPatternTransition selfTransition = state.transitions.Find((transition) => transition.targetState == state);
+            if (selfTransition == null)
+            {
+                EditorGUILayout.BeginHorizontal();
+
+                EditorGUILayout.LabelField("Self-Transition");
+                EditorGUILayout.LabelField("null");
+
+                EditorGUILayout.EndHorizontal();
+                totalHeight += EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
+            }
+            else
+            {
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.LabelField("Self-Transition");
+                EditorGUILayout.EndHorizontal();
+                totalHeight += EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
+
+                EditorGUILayout.BeginHorizontal();
+                selfTransition.condition.condition = (ENEMY_PATTERN_CONDITION)EditorGUILayout.EnumPopup("Condition", selfTransition.condition.condition);
+                EditorGUILayout.EndHorizontal();
+                totalHeight += EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
+
+                EditorGUILayout.BeginHorizontal();
+                selfTransition.condition.value = EditorGUILayout.FloatField("Value", selfTransition.condition.value);
+                EditorGUILayout.EndHorizontal();
+                totalHeight += EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
+
+                EditorGUILayout.BeginHorizontal();
+                selfTransition.condition.priority = EditorGUILayout.IntField("Priority", selfTransition.condition.priority);
+                EditorGUILayout.EndHorizontal();
+                totalHeight += EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
+
+                if (GUILayout.Button("Delete Self Transition"))
+                {
+                    RemoveTransition(selfTransition);
+                }
+                totalHeight += EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
+            }
+            EditorGUILayout.Space(10f);
+            totalHeight += EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
+
             EditorGUILayout.BeginHorizontal();
-
-            EnemyNormalPatternState state = (EnemyNormalPatternState)_stateBox.state;
             state.pattern = EditorGUILayout.ObjectField("Pattern", state.pattern, typeof(EnemyPattern), false) as EnemyPattern;
-
             EditorGUILayout.EndHorizontal();
+            totalHeight += EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
         }
         else if (_stateBox.state.GetType() == typeof(EnemyRandomPatternState))
         {
-            float totalHeight = 0f;
             totalHeight += EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
 
             EnemyRandomPatternState state = (EnemyRandomPatternState)_stateBox.state;
@@ -486,6 +555,51 @@ public class WindowEnemyPattern : EditorWindow
             }
 
             EditorGUILayout.BeginVertical();
+
+            EnemyPatternTransition selfTransition = state.transitions.Find((transition) => transition.targetState == state);
+            if (selfTransition == null)
+            {
+                EditorGUILayout.BeginHorizontal();
+
+                EditorGUILayout.LabelField("Self-Transition");
+                EditorGUILayout.LabelField("null");
+
+                EditorGUILayout.EndHorizontal();
+                totalHeight += EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
+            }
+            else
+            {
+                EditorGUILayout.BeginHorizontal();
+                EditorGUILayout.LabelField("Self-Transition");
+                EditorGUILayout.EndHorizontal();
+                totalHeight += EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
+
+                EditorGUILayout.BeginHorizontal();
+                selfTransition.condition.condition = (ENEMY_PATTERN_CONDITION)EditorGUILayout.EnumPopup("Condition", selfTransition.condition.condition);
+                EditorGUILayout.EndHorizontal();
+                totalHeight += EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
+
+                EditorGUILayout.BeginHorizontal();
+                selfTransition.condition.value = EditorGUILayout.FloatField("Value", selfTransition.condition.value);
+                EditorGUILayout.EndHorizontal();
+                totalHeight += EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
+
+                EditorGUILayout.BeginHorizontal();
+                selfTransition.condition.priority = EditorGUILayout.IntField("Priority", selfTransition.condition.priority);
+                EditorGUILayout.EndHorizontal();
+                totalHeight += EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
+
+                if (GUILayout.Button("Delete Self Transition"))
+                {
+                    RemoveTransition(selfTransition);
+                }
+                totalHeight += EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
+            }
+            totalHeight += EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
+
+            EditorGUILayout.Space(10f);
+            totalHeight += EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
+
             for (int i = 0; i < state.randomPatterns.Count; i++)
             {
                 EditorGUILayout.BeginHorizontal();
@@ -509,9 +623,9 @@ public class WindowEnemyPattern : EditorWindow
                 state.randomPatterns.Add(new EnemyRandomPatternState.RandomPattern());
             }
             totalHeight += EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
-            totalHeight += 10f;
-            _stateBox.rect.height = totalHeight;
         }
+        _stateBox.rect.height = totalHeight;
+
         EditorGUIUtility.labelWidth = originalLabelWidth;
 
         GUILayout.EndVertical();
@@ -533,7 +647,11 @@ public class WindowEnemyPattern : EditorWindow
 
     private void DrawTransitionContents(EnemyPatternTransition _transition)
     {
+        float totalHeight = 0f;
+
         GUILayout.BeginVertical();
+
+        totalHeight += EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
 
         float originalLabelWidth = EditorGUIUtility.labelWidth;
         EditorGUIUtility.labelWidth = 60f;
@@ -541,10 +659,17 @@ public class WindowEnemyPattern : EditorWindow
         EditorGUILayout.BeginHorizontal();
         _transition.condition.condition = (ENEMY_PATTERN_CONDITION)EditorGUILayout.EnumPopup("Condition", _transition.condition.condition);
         EditorGUILayout.EndHorizontal();
+        totalHeight += EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
 
         EditorGUILayout.BeginHorizontal();
         _transition.condition.value = EditorGUILayout.FloatField("Value", _transition.condition.value);
         EditorGUILayout.EndHorizontal();
+        totalHeight += EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
+
+        EditorGUILayout.BeginHorizontal();
+        _transition.condition.priority = EditorGUILayout.IntField("Priority", _transition.condition.priority);
+        EditorGUILayout.EndHorizontal();
+        totalHeight += EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
 
         EditorGUILayout.BeginHorizontal();
         // 값을 못 바꾸도록 함
@@ -552,6 +677,11 @@ public class WindowEnemyPattern : EditorWindow
         _transition.targetState = EditorGUILayout.ObjectField("Target", _transition.targetState, typeof(EnemyPatternState), false) as EnemyPatternState;
         GUI.enabled = true;
         EditorGUILayout.EndHorizontal();
+        totalHeight += EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
+
+        totalHeight += 10f;
+
+        transitionInfoBox.rect.size = new Vector2(220f, totalHeight);
 
         EditorGUIUtility.labelWidth = originalLabelWidth;
 

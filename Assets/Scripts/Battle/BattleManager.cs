@@ -35,6 +35,7 @@ public partial class BattleManager : MonoBehaviour
     private List<CardData> exhaustedCards = new List<CardData>();                           // 소멸 더미
 
     // 테스트용 임시
+    private int turnCount = 0;
     private float initTimer = 1.0f;
     private float startTimer = 1.0f;
 
@@ -48,7 +49,7 @@ public partial class BattleManager : MonoBehaviour
     private int energy = 0;
 
     private Character player;
-    private List<Character> enemyList;
+    private List<Enemy> enemyList;
 
     //private ItemCard selectedCard = null;
     //private bool isTargeting = false;

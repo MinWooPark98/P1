@@ -48,6 +48,9 @@ public class Character
     [SerializeField]
     private List<BuffData> buffList = new List<BuffData>();
 
+    private bool isDead = false;
+    private System.Action actionDie = null;
+
     private CharacterInfo characterInfo = null;
 
 
@@ -105,13 +108,23 @@ public class Character
         }
     }
 
+    public void SetActionDie(System.Action _actionDie)
+    {
+        actionDie = _actionDie;
+    }
+
     /// <summary>
     /// Á×À½
     /// </summary>
     public void Die()
     {
-        characterInfo.gameObject.SetActive(false);
+        characterInfo.gameObject.SetActive(false);              // Æ¼³ª°Ô ÇØ³õÀº ÀÓ½Ã
+
+        isDead = true;
+        actionDie?.Invoke();
     }
+
+    public bool IsDead() => isDead;
 
     /// <summary>
     /// ¹æ¾îµµ È¹µæ

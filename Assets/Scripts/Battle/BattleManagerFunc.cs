@@ -88,6 +88,16 @@ public partial class BattleManager : MonoBehaviour
         SetEnergy(energy + _energy);
     }
 
+    public void LoseEnergy(int _energyLose)
+    {
+        int energyRemained = energy - _energyLose;
+        if (energyRemained < 0)
+        {
+            energyRemained = 0;
+        }
+        SetEnergy(energyRemained);
+    }
+
     public int GetEnergy() => energy;
 
     public void TurnEnd()
@@ -100,10 +110,12 @@ public partial class BattleManager : MonoBehaviour
         ChangeState(BATTLE_STATE.ENEMYTURN);
     }
 
+    public int GetTurnCount() => turnCount;
+
     public List<CardData> GetDrawPile() => drawPile;
     public List<CardData> GetDiscardPile() => discardPile;
     public List<CardData> GetExhaustPile() => exhaustedCards;
 
     public Character GetPlayer() => player;
-    public List<Character> GetEnemyList() => enemyList;
+    public List<Enemy> GetEnemyList() => enemyList;
 }

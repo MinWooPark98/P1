@@ -4640,6 +4640,7 @@ MonoBehaviour:
   prefabItemCard: {fileID: 8015007058500285978, guid: 352064b8d3f0db44396e6754b035a8a4, type: 3}
   objectTargeting: {fileID: 9154783378686867364}
   posUsingCard: {fileID: 2615654119573005525}
+  btnTurnEnd: {fileID: 1848232524063053115}
   graphicsAnnouncement:
   - {fileID: 1867962287973452933}
   - {fileID: 6246680872081213173}
@@ -4647,8 +4648,6 @@ MonoBehaviour:
   textCountDrawpile: {fileID: 1584884142942733156}
   textCountDiscardpile: {fileID: 5955753237201886310}
   textCountExhaustpile: {fileID: 6448829264080215863}
-  CARD_SIZE_WIDTH: 320
-  CARD_SIZE_HEIGHT: 440
   RADIUS: 4000
   TOTAL_ROTATION: 18
   ROT_INTERVAL_MAX: 3
@@ -4948,7 +4947,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -5569,7 +5568,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4278190080
-  m_fontColor: {r: 0, g: 0, b: 0, a: 1}
+  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
