@@ -1,16 +1,43 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
 public class WindowEnemyPattern : EditorWindow
 {
+    private class StateBox
+    {
+        public Rect rect;
+        public EnemyPatternState state;
+    }
+
+    private class TransitionLine
+    {
+        public Vector2 startPos;
+        public Vector2 endPos;
+        public EnemyPatternTransition transition;
+        public StateBox masterBox;
+        public StateBox targetBox;
+    }
+
+    private class TransitionInfoBox
+    {
+        public Rect rect;
+        public EnemyPatternTransition transition;
+    }
+
+
     private EnemyInfo target = null;
 
-    private EnemyPatternState selectedState = null;
-    private EnemyPatternTransition selectedTransition = null;
-    private EnemyPatternState transitionStartState = null;
+    private List<StateBox> listStateBox = new List<StateBox>();
+    private List<TransitionLine> listTransitionLine = new List<TransitionLine>();
+    private TransitionInfoBox transitionInfoBox = new TransitionInfoBox();
+
+    private StateBox selectedStateBox = null;
+    private TransitionLine selectedTransitionLine = null;
+    private StateBox transitionStartStateBox = null;
     private Vector2 mousePosition;
 
     private static Vector2 MIN_SIZE = new Vector2(1600, 800);
@@ -24,6 +51,7 @@ public class WindowEnemyPattern : EditorWindow
     {
         WindowEnemyPattern window = GetWindow<WindowEnemyPattern>("Enemy Pattern State");
         window.target = _target;
+        window.Set();
         window.minSize = MIN_SIZE;
         window.Show();
     }
@@ -36,15 +64,49 @@ public class WindowEnemyPattern : EditorWindow
             return;
         }
 
-        Event e = Event.current;
+        ProcessEvent(Event.current);
+
+        DrawState();
+
+        bool shouldRepaint = false;
+
+        if (transitionStartStateBox != null)
+        {
+            Handles.DrawLine(transitionStartStateBox.rect.center, mousePosition);
+            shouldRepaint = true;
+        }
+
+        CalculateTransitionLinePos();
+        DrawTransitionLine();
+
+        BeginWindows();
+        for (int i = 0; i < target.patternStates.Count; i++)
+        {
+            DrawStateWindow(i);
+        }
+
+        if (selectedTransitionLine != null)
+        {
+            DrawTransitionInfo();
+        }
+        EndWindows();
+
+        if (GUI.changed || shouldRepaint)
+        {
+            Repaint();
+        }
+    }
+
+    private void ProcessEvent(Event e)
+    {
         mousePosition = e.mousePosition;
 
         if (e.type == EventType.ContextClick)
         {
             GenericMenu menu = new GenericMenu();
 
-            menu.AddItem(new GUIContent("Add NormalPattern"), false, AddNormalPatternState, mousePosition);
-            menu.AddItem(new GUIContent("Add RandomPattern"), false, AddRandomPatternState, mousePosition);
+            menu.AddItem(new GUIContent("Add NormalPattern"), false, AddNormalPatternState);
+            menu.AddItem(new GUIContent("Add RandomPattern"), false, AddRandomPatternState);
 
             menu.ShowAsContext();
 
@@ -57,66 +119,74 @@ public class WindowEnemyPattern : EditorWindow
             // 좌클릭일 때
             if (e.button == 0)
             {
-                EnemyPatternState stateClicked = null;
-                EnemyPatternTransition transitionClicked = null;
-                bool isTransitionSelected = false;
-                foreach (var state in target.patternStates)
+                bool isTransitionInfoBoxClicked = false;
+                StateBox stateBoxClicked = null;
+                TransitionLine transitionLineClicked = null;
+
+                if (selectedTransitionLine != null && transitionInfoBox.rect.Contains(mousePosition))
                 {
-                    foreach (var transition in state.transitions)
+                    isTransitionInfoBoxClicked = true;
+                }
+
+                if (isTransitionInfoBoxClicked == false)
+                {
+                    foreach (var box in listStateBox)
                     {
-                        if (HandleUtility.DistancePointLine(e.mousePosition, transition.startPos, transition.endPos) < 5f)
+                        if (box.rect.Contains(mousePosition))
                         {
-                            isTransitionSelected = true;
-                            transitionClicked = transition;
-                            break;
+                            stateBoxClicked = box;
                         }
                     }
 
-                    if (isTransitionSelected)
+                    if (stateBoxClicked == null)
                     {
-                        break;
-                    }
-
-                    if (state.rect.Contains(mousePosition))
-                    {
-                        stateClicked = state;
-                        break;
+                        foreach (var line in listTransitionLine)
+                        {
+                            if (HandleUtility.DistancePointLine(e.mousePosition, line.startPos, line.endPos) < 8f)
+                            {
+                                transitionLineClicked = line;
+                            }
+                        }
                     }
                 }
 
+                if (isTransitionInfoBoxClicked)
+                {
+                    // 당장은 트랜지션 정보 상자 건드렸을 때 동작하는 거 없음
+                }
                 // 박스가 클릭되었을 때
-                if (stateClicked != null)
+                else if (stateBoxClicked != null)
                 {
                     // 현재 트랜지션 연결 중이면
-                    if (transitionStartState != null)
+                    if (transitionStartStateBox != null)
                     {
                         // 이미 연결되어있지 않아야 연결
-                        if (transitionStartState.transitions.Exists((transition) => transition.targetState == stateClicked) == false)
+                        if (transitionStartStateBox.state.transitions.Exists((transition) => transition.targetState == stateBoxClicked.state) == false)
                         {
-                            AddTransition(transitionStartState, stateClicked);
+                            AddTransition(transitionStartStateBox, stateBoxClicked);
                         }
                         else
                         {
                             // 창 띄워서 이미 연결되어있다고 알려주는 것도 괜찮을 듯
                         }
-                        transitionStartState = null;
+                        transitionStartStateBox = null;
                         SetSelectedState(null);
                         e.Use();
                     }
                     else
                     {
-                        SetSelectedState(stateClicked);
+                        SetSelectedState(stateBoxClicked);
                     }
                 }
-                else if (transitionClicked != null)
+                else if (transitionLineClicked != null)
                 {
-                    SetSelectedTransition(transitionClicked);
+                    SetSelectedTransitionLine(transitionLineClicked);
                 }
                 else
                 {
-                    transitionStartState = null;
+                    transitionStartStateBox = null;
                     SetSelectedState(null);
-                    //SetSelectedTransition(null);
+                    SetSelectedTransitionLine(null);
                 }
             }
 
@@ -124,15 +194,15 @@ public class WindowEnemyPattern : EditorWindow
             if (e.button == 1)
             {
                 // 트랜지션 연결 중이 아니라면
-                if (transitionStartState == null)
+                if (transitionStartStateBox == null)
                 {
-                    foreach (var state in target.patternStates)
+                    foreach (var box in listStateBox)
                     {
-                        if (state.rect.Contains(mousePosition))
+                        if (box.rect.Contains(mousePosition))
                         {
                             GenericMenu menu = new GenericMenu();
-                            menu.AddItem(new GUIContent("Add Transition"), false, StartTransition, state);
-                            menu.AddItem(new GUIContent("Set This State to First"), false, SetFirstState, state);
+                            menu.AddItem(new GUIContent("Add Transition"), false, StartTransition, box);
+                            menu.AddItem(new GUIContent("Set This State to First"), false, SetFirstState, box);
                             menu.ShowAsContext();
 
                             e.Use();
@@ -140,234 +210,276 @@ public class WindowEnemyPattern : EditorWindow
                         }
                     }
                 }
-            }    
-        }
-
-        if (e.isKey)
-        {
-            if (e.keyCode == KeyCode.Delete)
-            {
-                RemoveSelectedState();
-                e.Use();
             }
         }
 
-        foreach (var state in target.patternStates)
+        if (e.type == EventType.KeyDown)
         {
-            DrawState(state);
+            if (e.keyCode == KeyCode.Delete)
+            {
+                if (selectedStateBox != null)
+                {
+                    RemoveSelectedStateBox();
+                }
+                if (selectedTransitionLine != null)
+                {
+                    RemoveSelectedTransitionLine();
+                }
+                e.Use();
+            }
         }
+    }
 
-        if (transitionStartState != null)
-        {
-            Handles.DrawLine(transitionStartState.rect.center, mousePosition);
-            Repaint();
-        }
-
-        BeginWindows();
+    private void Set()
+    {
         for (int i = 0; i < target.patternStates.Count; i++)
         {
-            DrawStateWindow(i);
+            AddStateBox(target.patternStates[i]);
         }
-        EndWindows();
 
-        if (GUI.changed)
+        for (int i = 0; i < listStateBox.Count; i++)
         {
-            Repaint();
+            for (int j = 0; j < listStateBox[i].state.transitions.Count; j++)
+            {
+                StateBox targetBox = listStateBox.Find((box) => box.state == listStateBox[i].state.transitions[j].targetState);
+                if (targetBox != null)
+                {
+                    AddTransitionLine(listStateBox[i], targetBox, listStateBox[i].state.transitions[j]);
+                }
+            }
         }
     }
 
-    private void SetSelectedState(EnemyPatternState _state)
+    private StateBox AddStateBox(EnemyPatternState _state)
     {
-        if (_state != null)
+        StateBox box = new StateBox();
+        box.state = _state;
+        if (_state.GetType() == typeof(EnemyNormalPatternState))
         {
-            SetSelectedTransition(null);
+            box.rect = new Rect(mousePosition.x, mousePosition.y, 220, 80);
+        }
+        else
+        {
+            box.rect = new Rect(mousePosition.x, mousePosition.y, 400, 0);
+        }
+        listStateBox.Add(box);
+        return box;
+    }
+
+    private void AddTransitionLine(StateBox _masterBox, StateBox _targetBox, EnemyPatternTransition _transition)
+    {
+        listTransitionLine.Add(MakeTransitionLine(_masterBox, _targetBox, _transition));
+    }
+
+    private TransitionLine MakeTransitionLine(StateBox _masterBox, StateBox _targetBox, EnemyPatternTransition _transition)
+    {
+        TransitionLine newLine = new TransitionLine();
+        newLine.transition = _transition;
+        newLine.masterBox = _masterBox;
+        newLine.targetBox = _targetBox;
+        return newLine;
+    }
+
+    private void SetSelectedState(StateBox _stateBox)
+    {
+        if (_stateBox != null)
+        {
+            SetSelectedTransitionLine(null);
         }
         GUI.FocusControl(null);
-        selectedState = _state;
+        selectedStateBox = _stateBox;
     }
 
-    private void SetSelectedTransition(EnemyPatternTransition _transition)
+    private void SetSelectedTransitionLine(TransitionLine _line)
     {
-        if (_transition != null)
+        if (_line != null)
         {
             SetSelectedState(null);
         }
         GUI.FocusControl(null);
-        selectedTransition = _transition;
+        selectedTransitionLine = _line;
     }
 
-    private void AddNormalPatternState(object _mousePositionObject)
+    private void AddNormalPatternState()
     {
-        Vector2 mousePosition = (Vector2)_mousePositionObject;
         EnemyPatternState newState = ScriptableObject.CreateInstance<EnemyNormalPatternState>();
-        newState.rect = new Rect(mousePosition.x, mousePosition.y, 220, 80);
         UtilsEditor.CreateFolderIfNotExists(FolderPath);
         UtilsEditor.CreateAsset(newState, string.Format(FolderPath + "newState.asset"));
         target.patternStates.Add(newState);
+
+        AddStateBox(newState);
     }
-    private void AddRandomPatternState(object _mousePositionObject)
+    private void AddRandomPatternState()
     {
-        Vector2 mousePosition = (Vector2)_mousePositionObject;
         EnemyPatternState newState = ScriptableObject.CreateInstance<EnemyRandomPatternState>();
-        newState.rect = new Rect(mousePosition.x, mousePosition.y, 400, 0);
         UtilsEditor.CreateFolderIfNotExists(FolderPath);
         UtilsEditor.CreateAsset(newState, string.Format(FolderPath + "newState.asset"));
         target.patternStates.Add(newState);
+
+        AddStateBox(newState);
     }
 
-    private void AddTransition(EnemyPatternState _startState, EnemyPatternState _targetState)
+    private void AddTransition(StateBox _startBox, StateBox _targetBox)
     {
         EnemyPatternTransition newTransition = ScriptableObject.CreateInstance<EnemyPatternTransition>();
-        newTransition.targetState = _targetState;
-        AssetDatabase.AddObjectToAsset(newTransition, _startState);
+        newTransition.targetState = _targetBox.state;
+        AssetDatabase.AddObjectToAsset(newTransition, _startBox.state);
         AssetDatabase.SaveAssets();
-        _startState.transitions.Add(newTransition);
+        AssetDatabase.Refresh();
+        _startBox.state.transitions.Add(newTransition);
+
+        AddTransitionLine(_startBox, _targetBox, newTransition);
     }
-    private void RemoveSelectedState()
+
+    private void RemoveSelectedStateBox()
     {
-        target.patternStates.Remove(selectedState);
-        for (int i = 0; i < target.patternStates.Count; i++)
+        RemoveStateBox(selectedStateBox);
+        selectedStateBox = null;
+    }
+
+    private void RemoveSelectedTransitionLine()
+    {
+        RemoveTransitionLine(selectedTransitionLine);
+        selectedTransitionLine = null;
+    }
+
+    private void RemoveStateBox(StateBox _box)
+    {
+        if (_box == null)
         {
-            for (int j = 0; j < target.patternStates[i].transitions.Count; j++)
-            {
-                if (target.patternStates[i].transitions[j].targetState == selectedState)
-                {
-                    target.patternStates[i].transitions.RemoveAt(j);
-                    AssetDatabase.RemoveObjectFromAsset(target.patternStates[i].transitions[j]);
-                    j--;
-                }
-            }
+            return;
         }
-        AssetDatabase.DeleteAsset(string.Format(FolderPath + selectedState.name + ".asset"));
+
+        var linesToRemove = listTransitionLine.FindAll((line) => line.masterBox == _box || line.targetBox == _box).ToList();
+        for (int i = 0; i < linesToRemove.Count; i++)
+        {
+            RemoveTransitionLine(linesToRemove[i]);
+        }
+
+        EnemyPatternState stateToRemove = _box.state;
+
+        target.patternStates.Remove(stateToRemove);
+
+        AssetDatabase.DeleteAsset(string.Format(FolderPath + _box.state.name + ".asset"));
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
 
-        selectedState = null;
+        listStateBox.Remove(_box);
     }
 
-    private void SetFirstState(object _stateObject)
+    private void RemoveTransitionLine(TransitionLine _line)
     {
-        EnemyPatternState state = (EnemyPatternState)_stateObject;
-        target.patternStates.Remove(state);
-        target.patternStates.Insert(0, state);
+        AssetDatabase.RemoveObjectFromAsset(_line.transition);
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
+
+        for (int i = 0; i < target.patternStates.Count; i++)
+        {
+            target.patternStates[i].transitions.Remove(_line.transition);
+        }
+
+        listTransitionLine.Remove(_line);
     }
 
-    private void StartTransition(object _stateObject)
+    private void SetFirstState(object _stateBoxObject)
     {
-        EnemyPatternState state = (EnemyPatternState)_stateObject;
-        transitionStartState = state;
+        StateBox stateBox = (StateBox)_stateBoxObject;
+        listStateBox.Remove(stateBox);
+        listStateBox.Insert(0, stateBox);
+        target.patternStates.Remove(stateBox.state);
+        target.patternStates.Insert(0, stateBox.state);
     }
 
-    private void DrawState(EnemyPatternState _state)
+    private void StartTransition(object _stateBoxObject)
     {
-        GUI.Box(_state.rect, _state.name.ToString());
+        StateBox stateBox = (StateBox)_stateBoxObject;
+        transitionStartStateBox = stateBox;
+    }
+
+    private void DrawState()
+    {
+        foreach (var box in listStateBox)
+        {
+            GUI.Box(box.rect, box.state.name.ToString());
+        }
     }
 
     private void DrawStateWindow(int _index)
     {
-        EnemyPatternState state = target.patternStates[_index];
+        StateBox stateBox = listStateBox[_index];
         if (_index == 0)
         {
             GUI.color = Color.red;
         }
-        state.rect = GUI.Window(_index, state.rect, id => DrawStateContents(state), state.name.ToString());
+        stateBox.rect = GUI.Window(_index, stateBox.rect, id => DrawStateContents(stateBox), stateBox.state.name.ToString());
         GUI.color = Color.white;
+    }
 
-        foreach (var transition in state.transitions)
+    private void DrawTransitionLine()
+    {
+        foreach (var line in listTransitionLine)
         {
-            if (transition.targetState != null)
+            DrawArrow(line.startPos, line.endPos, line == selectedTransitionLine ? Color.yellow : Color.white);
+        }
+    }
+
+    private void CalculateTransitionLinePos()
+    {
+        foreach (var line in listTransitionLine)
+        {
+            StateBox stateBox = line.masterBox;
+            StateBox targetState = line.targetBox;
+            float a = 0.5f * (stateBox.rect.width < stateBox.rect.height ? stateBox.rect.width : stateBox.rect.height);
+            float b = 0.5f * (targetState.rect.width < targetState.rect.height ? targetState.rect.width : targetState.rect.height);
+            // 윈도우 중점 좌상단이라 y는 아래로 갈 수록 커짐
+            float angle = Mathf.Rad2Deg * Mathf.Atan2(stateBox.rect.center.y - targetState.rect.center.y, targetState.rect.center.x - stateBox.rect.center.x);
+            float startAngleRad = Mathf.Deg2Rad * (angle + 45f);
+            float endAngleRad = Mathf.Deg2Rad * (180f + angle - 45f);
+            Vector2 startPos = stateBox.rect.center + a * new Vector2(Mathf.Cos(startAngleRad), -Mathf.Sin(startAngleRad));
+            Vector2 endPos = targetState.rect.center + b * new Vector2(Mathf.Cos(endAngleRad), -Mathf.Sin(endAngleRad));
+            // Rect 밖에서 시작하고 끝나도록
+            // Rect 경계 계산
+            startPos = GetNearestPosOnBorder(startPos, angle, stateBox.rect);
+            endPos = GetNearestPosOnBorder(endPos, 180f + angle, targetState.rect);
+
+            line.startPos = startPos;
+            line.endPos = endPos;
+
+            if (line == selectedTransitionLine)
             {
-                float a = 0.5f * (state.rect.width < state.rect.height ? state.rect.width : state.rect.height);
-                float b = 0.5f * (transition.targetState.rect.width < transition.targetState.rect.height ? transition.targetState.rect.width : transition.targetState.rect.height);
-                // 윈도우 중점 좌상단이라 y는 아래로 갈 수록 커짐
-                float angle = Mathf.Rad2Deg * Mathf.Atan2(state.rect.center.y - transition.targetState.rect.center.y, transition.targetState.rect.center.x - state.rect.center.x);
-                float startAngleRad = Mathf.Deg2Rad * (angle + 45f);
-                float endAngleRad = Mathf.Deg2Rad * (180f + angle - 45f);
-                Vector2 startPos = state.rect.center + a * new Vector2(Mathf.Cos(startAngleRad), -Mathf.Sin(startAngleRad));
-                Vector2 endPos = transition.targetState.rect.center + b * new Vector2(Mathf.Cos(endAngleRad), -Mathf.Sin(endAngleRad));
-                // Rect 밖에서 시작하고 끝나도록
-                // Rect 경계 계산
-                startPos = GetNearestPosOnBorder(startPos, angle, state.rect);
-                endPos = GetNearestPosOnBorder(endPos, 180f + angle, transition.targetState.rect);
+                Vector2 size = new Vector2(220f, 100f);
+                Vector2 bottomPos = 0.5f * (startPos + endPos) - size * 0.5f - new Vector2(0f, 10f);
+                Rect rect = new Rect();
+                rect.center = new Vector2(bottomPos.x, bottomPos.y - size.y * 0.5f);
+                rect.size = size;
 
-                transition.startPos = startPos;
-                transition.endPos = endPos;
-
-                DrawArrow(startPos, endPos, transition == selectedTransition ? Color.yellow : Color.white);
-
-                if (transition == selectedTransition)
-                {
-                    Vector2 size = new Vector2(220f, 100f);
-                    Vector2 bottomPos = 0.5f * (startPos + endPos) - size * 0.5f - new Vector2(0f, 10f);
-                    Rect rect = new Rect();
-                    rect.center = new Vector2(bottomPos.x, bottomPos.y - size.y * 0.5f);
-                    rect.size = size;
-                    DrawTransitionInfo(transition, rect);
-                }
+                transitionInfoBox.rect = rect;
+                transitionInfoBox.transition = line.transition;
             }
         }
     }
 
-    // rect위치와 크기에 Transition 정보 보여줌
-    private void DrawTransitionInfo(EnemyPatternTransition _transition, Rect _rect)
-    {
-        GUI.Box(_rect, "Transition Info");
-        _rect = GUI.Window(target.patternStates.Count + 1, _rect, id => DrawTransitionContents(_transition), "Transition Info");
-    }
-
-    private void DrawTransitionContents(EnemyPatternTransition _transition)
+    private void DrawStateContents(StateBox _stateBox)
     {
         GUILayout.BeginVertical();
 
         float originalLabelWidth = EditorGUIUtility.labelWidth;
         EditorGUIUtility.labelWidth = 60f;
-
-        EditorGUILayout.BeginHorizontal();
-        _transition.condition.condition = (ENEMY_PATTERN_CONDITION)EditorGUILayout.EnumPopup("Condition", _transition.condition.condition);
-        EditorGUILayout.EndHorizontal();
-
-        EditorGUILayout.BeginHorizontal();
-        _transition.condition.value = EditorGUILayout.FloatField("Value", _transition.condition.value);
-        EditorGUILayout.EndHorizontal();
-
-        EditorGUIUtility.labelWidth = originalLabelWidth;
-
-        GUILayout.EndVertical();
-    }
-
-    private Vector2 GetNearestPosOnBorder(Vector2 _pos, float _angle, Rect _border)
-    {
-        float angleRad = _angle * Mathf.Deg2Rad;
-        float stateBorderX = Mathf.Cos(angleRad) >= 0f ? _border.center.x + _border.width * 0.5f : _border.center.x - _border.width * 0.5f;
-        float stateBorderY = Mathf.Sin(angleRad) >= 0f ? _border.center.y - _border.height * 0.5f : _border.center.y + _border.height * 0.5f;
-        float stateAlpha = (stateBorderX - _pos.x) / Mathf.Cos(angleRad);
-        float stateBeta = (stateBorderY - _pos.y) / -Mathf.Sin(angleRad);
-        float stateDistance = stateAlpha < stateBeta ? stateAlpha : stateBeta;
-        Vector2 returnPos = _pos + stateDistance * new Vector2(Mathf.Cos(angleRad), -Mathf.Sin(angleRad));
-        return returnPos;
-    }
-
-    private void DrawStateContents(EnemyPatternState _state)
-    {
-        GUILayout.BeginVertical();
-
-        float originalLabelWidth = EditorGUIUtility.labelWidth;
-        EditorGUIUtility.labelWidth = 60f;
-        if (_state.GetType() == typeof(EnemyNormalPatternState))
+        if (_stateBox.state.GetType() == typeof(EnemyNormalPatternState))
         {
             EditorGUILayout.BeginHorizontal();
 
-            EnemyNormalPatternState state = (EnemyNormalPatternState) _state;
+            EnemyNormalPatternState state = (EnemyNormalPatternState)_stateBox.state;
             state.pattern = EditorGUILayout.ObjectField("Pattern", state.pattern, typeof(EnemyPattern), false) as EnemyPattern;
 
             EditorGUILayout.EndHorizontal();
         }
-        else if (_state.GetType() == typeof(EnemyRandomPatternState))
+        else if (_stateBox.state.GetType() == typeof(EnemyRandomPatternState))
         {
             float totalHeight = 0f;
             totalHeight += EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
 
-            EnemyRandomPatternState state = (EnemyRandomPatternState) _state;
+            EnemyRandomPatternState state = (EnemyRandomPatternState)_stateBox.state;
             if (state.randomPatterns == null)
             {
                 state.randomPatterns = new List<EnemyRandomPatternState.RandomPattern>();
@@ -398,12 +510,64 @@ public class WindowEnemyPattern : EditorWindow
             }
             totalHeight += EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
             totalHeight += 10f;
-            state.rect.height = totalHeight;
+            _stateBox.rect.height = totalHeight;
         }
         EditorGUIUtility.labelWidth = originalLabelWidth;
 
         GUILayout.EndVertical();
+
         GUI.DragWindow();
+    }
+
+
+    // rect위치와 크기에 Transition 정보 보여줌
+    private void DrawTransitionInfo()
+    {
+        if (selectedTransitionLine == null)
+        {
+            return;
+        }
+        GUI.Box(transitionInfoBox.rect, "Transition Info");
+        transitionInfoBox.rect = GUI.Window(target.patternStates.Count + 1, transitionInfoBox.rect, id => DrawTransitionContents(transitionInfoBox.transition), "Transition Info");
+    }
+
+    private void DrawTransitionContents(EnemyPatternTransition _transition)
+    {
+        GUILayout.BeginVertical();
+
+        float originalLabelWidth = EditorGUIUtility.labelWidth;
+        EditorGUIUtility.labelWidth = 60f;
+
+        EditorGUILayout.BeginHorizontal();
+        _transition.condition.condition = (ENEMY_PATTERN_CONDITION)EditorGUILayout.EnumPopup("Condition", _transition.condition.condition);
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
+        _transition.condition.value = EditorGUILayout.FloatField("Value", _transition.condition.value);
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUILayout.BeginHorizontal();
+        // 값을 못 바꾸도록 함
+        GUI.enabled = false;
+        _transition.targetState = EditorGUILayout.ObjectField("Target", _transition.targetState, typeof(EnemyPatternState), false) as EnemyPatternState;
+        GUI.enabled = true;
+        EditorGUILayout.EndHorizontal();
+
+        EditorGUIUtility.labelWidth = originalLabelWidth;
+
+        GUILayout.EndVertical();
+    }
+
+    private Vector2 GetNearestPosOnBorder(Vector2 _pos, float _angle, Rect _border)
+    {
+        float angleRad = _angle * Mathf.Deg2Rad;
+        float stateBorderX = Mathf.Cos(angleRad) >= 0f ? _border.center.x + _border.width * 0.5f : _border.center.x - _border.width * 0.5f;
+        float stateBorderY = Mathf.Sin(angleRad) >= 0f ? _border.center.y - _border.height * 0.5f : _border.center.y + _border.height * 0.5f;
+        float stateAlpha = (stateBorderX - _pos.x) / Mathf.Cos(angleRad);
+        float stateBeta = (stateBorderY - _pos.y) / -Mathf.Sin(angleRad);
+        float stateDistance = stateAlpha < stateBeta ? stateAlpha : stateBeta;
+        Vector2 returnPos = _pos + stateDistance * new Vector2(Mathf.Cos(angleRad), -Mathf.Sin(angleRad));
+        return returnPos;
     }
 
     private void DrawArrow(Vector3 _startPos, Vector3 _endPos, Color _color)
