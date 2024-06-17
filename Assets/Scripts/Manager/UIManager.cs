@@ -71,6 +71,8 @@ public class UIManager : MonoBehaviour
         UIManager.Instance.AddPopup("PopupDrawPile", "Prefabs/UI/Popups/PopupDrawPile");
         UIManager.Instance.AddPopup("PopupDiscardPile", "Prefabs/UI/Popups/PopupDiscardPile");
         UIManager.Instance.AddPopup("PopupExhaustPile", "Prefabs/UI/Popups/PopupExhaustPile");
+        UIManager.Instance.AddPopup("PopupBattleReward", "Prefabs/UI/Popups/PopupBattleReward");
+        UIManager.Instance.AddPopup("PopupBattleRewardCard", "Prefabs/UI/Popups/PopupBattleRewardCard");
 
         // 어드레서블 사용
         //AsyncOperationHandle<IList<GameObject>> objectHandle = Addressables.LoadAssetsAsync("PreLoadPopup",

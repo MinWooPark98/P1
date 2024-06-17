@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using static UnityEngine.EventSystems.EventTrigger;
 
@@ -33,7 +34,7 @@ public partial class BattleManager : MonoBehaviour
     private List<CardData> handCards = new List<CardData>();                                // 현재 손패
     private List<CardData> discardPile = new List<CardData>();                              // 버린 카드 더미 
     private List<CardData> exhaustedCards = new List<CardData>();                           // 소멸 더미
-
+    
     // 테스트용 임시
     private int turnCount = 0;
     private float initTimer = 1.0f;
@@ -82,7 +83,7 @@ public partial class BattleManager : MonoBehaviour
     {
         if (currState != nextState)
         {
-            LogManager.Log("<color=yellow> InGameManager State Change : </color> " + currState + " -> " + nextState);
+            LogManager.Log("<color=yellow> BattleManager State Change : </color> " + currState + " -> " + nextState);
 
             lastState = currState;
             Exit(currState);

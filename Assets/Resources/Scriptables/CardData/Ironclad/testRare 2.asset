@@ -10,16 +10,16 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: df77c0b018fa09849897a2ecf79f3cea, type: 3}
-  m_Name: Strike
+  m_Name: testRare 2
   m_EditorClassIdentifier: 
   type: 0
-  id: 4
-  idName: Strike
+  id: 11
+  idName: testRare2
   idDesc: Deal {0} damage.
-  rarity: 0
-  enhanced: 0
+  rarity: 3
+  enhanced: 1
   energy: 1
   buffList: []
   featureList: []
-  damage: 6
+  damage: 9
   atkAllEnemies: 0

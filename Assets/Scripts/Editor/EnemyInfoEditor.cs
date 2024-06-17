@@ -15,8 +15,8 @@ public class EnemyInfoEditor : Editor
         while (iterator.NextVisible(enterChildren))
         {
             enterChildren = false;
-            //if (iterator.propertyPath == "patternStates")
-            //    continue;
+            if (iterator.propertyPath == "patternStates")
+                continue;
             EditorGUILayout.PropertyField(iterator, true);
         }
 

@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class CharacterInfo : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+public class CharacterBattleUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 {
     [SerializeField]
     private TMP_Text textHp = null;

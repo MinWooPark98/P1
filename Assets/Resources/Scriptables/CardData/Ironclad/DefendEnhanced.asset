@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: DefendEnhanced
   m_EditorClassIdentifier: 
   type: 1
+  id: 3
   idName: Defend
   idDesc: Gain {0} Block.
   rarity: 0
@@ -21,6 +22,3 @@ MonoBehaviour:
   buffList: []
   featureList: []
   block: 8
-  references:
-    version: 2
-    RefIds: []

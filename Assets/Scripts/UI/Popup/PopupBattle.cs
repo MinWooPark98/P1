@@ -10,10 +10,10 @@ public class PopupBattle : Popup
     private TMP_Text textEnergy = null;
 
     [SerializeField]
-    private CharacterInfo playerInfo = null;
+    private CharacterBattleUI playerInfo = null;
 
     [SerializeField]
-    private List<CharacterInfo> enemyInfos = null;
+    private List<CharacterBattleUI> enemyInfos = null;
 
     [SerializeField]
     private Transform drawPile = null;
@@ -259,8 +259,8 @@ public class PopupBattle : Popup
         BattleManager.Instance.TurnEnd();
     }
 
-    public CharacterInfo GetPlayerInfo() => playerInfo;
-    public List<CharacterInfo> GetEnemyInfos() => enemyInfos;
+    public CharacterBattleUI GetPlayerInfo() => playerInfo;
+    public List<CharacterBattleUI> GetEnemyInfos() => enemyInfos;
 
     public void ButtonDrawPile()
     {
@@ -464,7 +464,9 @@ public class PopupBattle : Popup
     public void DiscardCard(ItemCard _itemCard)
     {
         _itemCard.SetState(ItemCard.CARD_STATE.DISCARD);
+        BattleManager.Instance.DiscardCard(cardList.IndexOf(_itemCard));
         cardList.Remove(_itemCard);
+        Destroy(_itemCard.gameObject);
     }
 
     // BattleManager에서 PopupBattle에 Discard를 요구하는 유일한 경우 - 이 때를 제외하곤 PopupBattle 내에서만 Discard실행

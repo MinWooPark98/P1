@@ -59,16 +59,6 @@ public class ItemCard : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         {
             imgBackground.color = Color.white;
         }
-
-        switch (state)
-        {
-            case CARD_STATE.DISCARD:
-                BattleManager.Instance.DiscardCard(data);
-                Destroy(gameObject);
-                break;
-            default:
-                break;
-        }
     }
 
     public bool GetLookingAt() => isLookingAt;

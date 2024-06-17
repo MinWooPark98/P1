@@ -51,15 +51,15 @@ public class Character
     private bool isDead = false;
     private System.Action actionDie = null;
 
-    private CharacterInfo characterInfo = null;
+    private CharacterBattleUI characterInfo = null;
 
 
-    public void SetCharacterInfo(CharacterInfo _characterInfo)
+    public void SetCharacterInfo(CharacterBattleUI _characterInfo)
     {
         characterInfo = _characterInfo;
     }
 
-    public CharacterInfo GetCharacterInfo() => characterInfo;
+    public CharacterBattleUI GetCharacterInfo() => characterInfo;
 
     public void Init(int _currHp, int _maxHp, int _defense, List<BuffData> _buffList)
     {

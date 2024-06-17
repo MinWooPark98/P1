@@ -1,11 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class CardManager : MonoBehaviour
 {
     public static CardManager s_Instance;
-    public static CardManager instance
+    public static CardManager Instance
     {
         get
         {
@@ -14,12 +15,16 @@ public class CardManager : MonoBehaviour
     }
 
     [SerializeField]
-    private List<CardData> cardList = null;                     // 획득한 순서로 나열되어 있는 덱 정보
+    private List<CardData> allCardList = new List<CardData>();                      // 모든 카드 정보
 
+    [SerializeField]
+    private List<CardData> deckList = new List<CardData>();                         // 플레이어 현재 덱 리스트
 
     private void Awake()
     {
         s_Instance= this;
+
+        LoadAllCards();
     }
 
     private void OnDestroy()
@@ -27,18 +32,48 @@ public class CardManager : MonoBehaviour
         s_Instance = null;
     }
 
-    public List<CardData> GetCardList()
+    private void LoadAllCards()
     {
-        return cardList;
+        allCardList = Resources.LoadAll<CardData>("Scriptables/CardData").ToList();
+    }
+
+    public void SetDeck(List<int> _listId)
+    {
+        deckList.Clear();
+
+        for (int i = 0; i < _listId.Count; i++)
+        {
+            CardData card = allCardList.Find((card) => card.id == _listId[i]);
+            if (card == null)
+            {
+                LogManager.Log("카드 정보 없음  -  id = " + _listId[i]);
+                continue;
+            }
+            deckList.Add(card);
+        }
+    }
+
+    public List<CardData> GetDeckList()
+    {
+        return deckList;
     }
     
     public void AcquireCard(CardData _card)
     {
-        cardList.Add(_card);
+        deckList.Add(_card);
+        PlayerDataManager.Instance.SetCardIds(deckList.Select((card) => card.id).ToList());
     }
 
-    public void RemoveCard(CardData _card)
+    public void RemoveCard(int _index)
     {
-        cardList.Remove(_card);
+        deckList.RemoveAt(_index);
+        PlayerDataManager.Instance.SetCardIds(deckList.Select((card) => card.id).ToList());
+    }
+
+    public List<CardData> GetAllCardList() => allCardList;
+
+    public CardData GetCardData(int _id)
+    {
+        return allCardList.Find((card) => card.id == _id);
     }
 }

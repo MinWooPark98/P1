@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: BashEnhanced
   m_EditorClassIdentifier: 
   type: 0
+  id: 1
   idName: Bash
   idDesc: Deal {0} damage. Apply 3 <color=blue>Vulnerable</color>.
   rarity: 0

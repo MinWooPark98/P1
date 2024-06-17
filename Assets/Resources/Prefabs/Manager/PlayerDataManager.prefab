@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &3752707102546915647
+--- !u!1 &2568784050908865077
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,41 +8,43 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 3941836822913047530}
-  - component: {fileID: 894671081664036136}
+  - component: {fileID: 3145221033344158147}
+  - component: {fileID: 2179572373046597395}
   m_Layer: 0
-  m_Name: CardManager
+  m_Name: PlayerDataManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &3941836822913047530
+--- !u!4 &3145221033344158147
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3752707102546915647}
+  m_GameObject: {fileID: 2568784050908865077}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 1
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &894671081664036136
+--- !u!114 &2179572373046597395
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3752707102546915647}
+  m_GameObject: {fileID: 2568784050908865077}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 05a3fa4b9364bb443867f12694eb4727, type: 3}
+  m_Script: {fileID: 11500000, guid: ebe40a871b00cfe4a867003f4f25a5f1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  allCardList: []
-  deckList: []
+  data:
+    currHp: 0
+    maxHp: 0
+    cardIds: 

@@ -22,6 +22,8 @@ public abstract class CardData : ScriptableObject
     //[SerializeField]
     public CARD_TYPE type = CARD_TYPE.NONE;                       // 타입 (공격, 스킬, 파워, 저주, 상태이상)
 
+    public int id;                                                // 카드 ID
+
     // id로 바꿀 거임 - 테이블 만들면
     public string idName = string.Empty;
 

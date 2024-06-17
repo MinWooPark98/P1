@@ -52,10 +52,10 @@ public partial class BattleManager : MonoBehaviour
     /// <summary>
     /// 카드를 묘지로 보낸다
     /// </summary>
-    public void DiscardCard(CardData _cardData)
+    public void DiscardCard(int _index)
     {
-        discardPile.Add(_cardData);
-        handCards.Remove(_cardData);
+        discardPile.Add(handCards[_index]);
+        handCards.RemoveAt(_index);
     }
 
     /// <summary>

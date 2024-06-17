@@ -8,9 +8,13 @@ public partial class BattleManager : MonoBehaviour
     private void ENTER_INIT()
     {
         StartCoroutine(UIManager.Instance.routineLoadPopup());
+        DataTableManager.LoadAll();
+
         popupBattle = UIManager.Instance.MakePopup<PopupBattle>();
 
-        drawPile = Utils.ShuffleList(CardManager.instance.GetCardList().ToList());
+        PlayerDataManager.Instance.SetCardIds(StaticData.startDeckIronclad.ToList());
+        CardManager.Instance.SetDeck(PlayerDataManager.Instance.GetCardIds());
+        drawPile = Utils.ShuffleList(CardManager.Instance.GetDeckList().ToList());
         player = new Character();
         player.SetCharacterInfo(popupBattle.GetPlayerInfo());
         player.Init(30, 30, 6, null);
@@ -54,7 +58,6 @@ public partial class BattleManager : MonoBehaviour
 
     private void UPDATE_INIT()
     {
-        LogManager.Log("Update_Init");
         initTimer -= Time.deltaTime;
         //LogManager.Log("InitTimer = " + initTimer);
         if (initTimer <= 0)
@@ -65,7 +68,7 @@ public partial class BattleManager : MonoBehaviour
 
     private void EXIT_INIT()
     {
-
+        
     }
 
 
@@ -103,6 +106,11 @@ public partial class BattleManager : MonoBehaviour
 
     private void UPDATE_PLAYERTURN()
     {
+        if (Input.GetKeyDown(KeyCode.W))
+        {
+            ChangeState(BATTLE_STATE.WIN);
+        }
+
         if (Input.GetKeyDown(KeyCode.S))
         {
             drawCount++;
@@ -164,12 +172,14 @@ public partial class BattleManager : MonoBehaviour
     // WIN
     private void ENTER_WIN()
     {
-
+        // 임시 테스트
+        PlayerDataManager.Instance.SetCardRewards(TableCardRewardRarity.GetFrom.NormalCombats);
+        PopupBattleReward popupBattleReward = UIManager.Instance.MakePopup<PopupBattleReward>();
     }
 
     private void UPDATE_WIN()
     {
-        Utils.AppQuit();
+        //Utils.AppQuit();
     }
 
     private void EXIT_WIN()

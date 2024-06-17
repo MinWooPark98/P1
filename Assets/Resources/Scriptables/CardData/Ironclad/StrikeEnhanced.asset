@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: StrikeEnhanced
   m_EditorClassIdentifier: 
   type: 0
+  id: 5
   idName: Strike
   idDesc: Deal {0} damage.
   rarity: 0
@@ -21,3 +22,4 @@ MonoBehaviour:
   buffList: []
   featureList: []
   damage: 9
+  atkAllEnemies: 0
