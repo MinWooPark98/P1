@@ -10,6 +10,16 @@ public class CardManager : MonoBehaviour
     {
         get
         {
+            if (s_Instance == null)
+            {
+                s_Instance = FindObjectOfType<CardManager>();
+                if (s_Instance == null)
+                {
+                    GameObject obj = (GameObject)Instantiate(Resources.Load("Prefabs/Manager/CardManager"));
+                    DontDestroyOnLoad(obj);
+                }
+            }
+
             return s_Instance;
         }
     }
@@ -22,7 +32,7 @@ public class CardManager : MonoBehaviour
 
     private void Awake()
     {
-        s_Instance= this;
+        s_Instance = this;
 
         LoadAllCards();
     }
@@ -61,13 +71,13 @@ public class CardManager : MonoBehaviour
     public void AcquireCard(CardData _card)
     {
         deckList.Add(_card);
-        PlayerDataManager.Instance.SetCardIds(deckList.Select((card) => card.id).ToList());
+        PlayerDataManager.Instance.SetDeckIds(deckList.Select((card) => card.id).ToList());
     }
 
     public void RemoveCard(int _index)
     {
         deckList.RemoveAt(_index);
-        PlayerDataManager.Instance.SetCardIds(deckList.Select((card) => card.id).ToList());
+        PlayerDataManager.Instance.SetDeckIds(deckList.Select((card) => card.id).ToList());
     }
 
     public List<CardData> GetAllCardList() => allCardList;

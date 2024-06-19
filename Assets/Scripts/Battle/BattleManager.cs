@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using static UnityEngine.EventSystems.EventTrigger;
 
 public partial class BattleManager : MonoBehaviour
 {
@@ -22,6 +21,16 @@ public partial class BattleManager : MonoBehaviour
     {
         get
         {
+            if (s_Instance == null)
+            {
+                s_Instance = FindObjectOfType<BattleManager>();
+                if (s_Instance == null)
+                {
+                    GameObject obj = (GameObject)Instantiate(Resources.Load("Prefabs/Manager/BattleManager"));
+                    DontDestroyOnLoad(obj);
+                }
+            }
+
             return s_Instance;
         }
     }

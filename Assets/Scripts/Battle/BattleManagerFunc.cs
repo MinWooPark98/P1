@@ -110,6 +110,12 @@ public partial class BattleManager : MonoBehaviour
         ChangeState(BATTLE_STATE.ENEMYTURN);
     }
 
+    public void EndBattle()
+    {
+        MapManager.Instance.ExitRoom();
+        gameObject.SetActive(false);
+    }
+
     public int GetTurnCount() => turnCount;
 
     public List<CardData> GetDrawPile() => drawPile;

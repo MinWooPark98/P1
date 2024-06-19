@@ -20,4 +20,10 @@ public class PopupBattleReward : Popup
                 }
             });
     }
+
+    public void ButtonNext()
+    {
+        BattleManager.Instance.EndBattle();
+        ButtonClose();
+    }
 }

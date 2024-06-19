@@ -7,5 +7,10 @@ public static class StaticData
 
     public static int MAX_HAND_COUNT = 10;
 
+    public static int MAP_FLOORS = 15;
+    public static int MAP_ROOMS_FLOOR = 7;
+    public static int MAP_PATHS = 6;
+
+
     public static List<int> startDeckIronclad = new List<int>() { 4, 4, 4, 4, 4, 4, 4, 4, 2, 2, 2, 2, 2, 0 };
 }

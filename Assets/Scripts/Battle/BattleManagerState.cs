@@ -12,8 +12,6 @@ public partial class BattleManager : MonoBehaviour
 
         popupBattle = UIManager.Instance.MakePopup<PopupBattle>();
 
-        PlayerDataManager.Instance.SetCardIds(StaticData.startDeckIronclad.ToList());
-        CardManager.Instance.SetDeck(PlayerDataManager.Instance.GetCardIds());
         drawPile = Utils.ShuffleList(CardManager.Instance.GetDeckList().ToList());
         player = new Character();
         player.SetCharacterInfo(popupBattle.GetPlayerInfo());
@@ -175,11 +173,16 @@ public partial class BattleManager : MonoBehaviour
         // 임시 테스트
         PlayerDataManager.Instance.SetCardRewards(TableCardRewardRarity.GetFrom.NormalCombats);
         PopupBattleReward popupBattleReward = UIManager.Instance.MakePopup<PopupBattleReward>();
+        popupBattleReward.SetAction(
+            () =>
+            {
+                popupBattle.ButtonClose();
+            });
     }
 
     private void UPDATE_WIN()
     {
-        //Utils.AppQuit();
+
     }
 
     private void EXIT_WIN()
@@ -196,7 +199,7 @@ public partial class BattleManager : MonoBehaviour
 
     private void UPDATE_GAMEOVER()
     {
-        Utils.AppQuit();
+
     }
 
     private void EXIT_GAMEOVER()

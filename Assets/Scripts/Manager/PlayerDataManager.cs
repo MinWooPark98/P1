@@ -30,7 +30,7 @@ public class PlayerDataManager : MonoBehaviour
     {
         public int currHp;
         public int maxHp;
-        public List<int> cardIds = new List<int>();
+        public List<int> deckIds = new List<int>();
 
         // 카드 보상 관련
         // cardRewardOffset : 기본적인 확률에 추가 적용되는 확률 (-5% 가 default, Common카드가 나올 때마다 1%씩 증가해서 40%가 최대)
@@ -38,6 +38,8 @@ public class PlayerDataManager : MonoBehaviour
         // offset < 0이면, 그만큼 Rare확률을 낮추고, Common확률을 증가시킴
         public float cardRewardOffset = -0.05f;
         public List<int> cardRewards = new List<int>();
+
+        // 맵 관련
     }
 
     [SerializeField]
@@ -64,12 +66,16 @@ public class PlayerDataManager : MonoBehaviour
         data.maxHp = _maxHp;
     }
 
-    public void SetCardIds(List<int> _cardIds)
+    public int GetCurrHp() => data.currHp;
+
+    public int GetMaxHp() => data.maxHp;
+
+    public void SetDeckIds(List<int> _cardIds)
     {
-        data.cardIds = _cardIds;
+        data.deckIds = _cardIds;
     }
 
-    public List<int> GetCardIds() => data.cardIds;
+    public List<int> GetCardIds() => data.deckIds;
 
     public void SetCardRewards(TableCardRewardRarity.GetFrom _getFrom)
     {

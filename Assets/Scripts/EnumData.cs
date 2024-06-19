@@ -158,3 +158,15 @@ public enum ENEMY_PATTERN_CONDITION
     HpLessThan,             // (0 ~ 1)
 }
 
+public enum MapType
+{
+    None = -1,
+    Monster,
+    Event,
+    Elite,
+    RestSite,
+    Merchant,
+    Treasure,
+    Boss,
+}
+
