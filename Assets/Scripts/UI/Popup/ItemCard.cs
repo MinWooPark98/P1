@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class ItemCard : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+public class ItemCard : Button
 {
     [SerializeField]
     private Image imgBackground = null;
@@ -15,9 +15,6 @@ public class ItemCard : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
     [SerializeField]
     private TMP_Text textDesc;
-
-    [SerializeField]
-    private Button btnCard = null;
 
     private CardData data = null;
 
@@ -68,38 +65,41 @@ public class ItemCard : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         data = _data;
 
         textName.text = string.Format(data.idName + (data.enhanced > 0 ? "+" + data.enhanced.ToString() : string.Empty));
+        string strDesc = string.Empty;
+        if (data.actionList != null)
+        {
+            for (int i = 0; i < data.actionList.Count; i++)
+            {
+                string textAction = data.actionList[i].GetDesc();
+                strDesc += string.Format(textAction + (string.IsNullOrEmpty(textAction) == false ? "\n" : string.Empty));
+            }
+        }
+        textDesc.text = strDesc;
         switch (data.type)
         {
             case CARD_TYPE.ATTACK:
                 {
                     textName.color = Color.red;
-                    AttackCard _newData = (AttackCard)data;
-                    textDesc.text = string.Format(_newData.idDesc, _newData.damage);
                 }
                 break;
             case CARD_TYPE.SKILL:
                 {
                     textName.color = Color.yellow;
-                    SkillCard _newData = (SkillCard)data;
-                    textDesc.text = string.Format(_newData.idDesc, _newData.block);
                 }
                 break;
             case CARD_TYPE.POWER:
                 {
                     textName.color = Color.blue;
-                    textDesc.text = data.idDesc;
                 }
                 break;
             case CARD_TYPE.CURSE:
                 {
                     textName.color = Color.black;
-                    textDesc.text = data.idDesc;
                 }
                 break;
-            case CARD_TYPE.CC:
+            case CARD_TYPE.STATUS:
                 {
                     textName.color = Color.gray;
-                    textDesc.text = data.idDesc;
                 }
                 break;
             default:
@@ -111,6 +111,7 @@ public class ItemCard : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
 
     private void Update()
     {
+        isLookingAt = state == CARD_STATE.NORMAL && IsHighlighted();
     }
 
     public void SetActionClicked(System.Action _actionClicked)
@@ -147,76 +148,68 @@ public class ItemCard : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
         Character player = BattleManager.Instance.GetPlayer();
         List<Enemy> enemyList = BattleManager.Instance.GetEnemyList();
 
-        switch (data.type)
+        for (int i = 0; i < data.actionList.Count; i++)
         {
-            case CARD_TYPE.ATTACK:
-                {
-                    AttackCard card = (AttackCard)data;
-                    if (target != null)
-                    {
-                        target.Damage(card.damage);
-                    }
-                    else
-                    {
-                        for (int i = 0; i < enemyList.Count; i++)
-                        {
-                            enemyList[i].Damage(card.damage);
-                        }
-                    }
-                }
-                break;
-            case CARD_TYPE.SKILL:
-                {
-                    SkillCard card = (SkillCard)data;
-                    player.AddDefense(card.block);
-                }
-                break;
-            case CARD_TYPE.POWER:
-                break;
-            case CARD_TYPE.CURSE:
-                break;
-            case CARD_TYPE.CC:
-                break;
-        }
+            data.actionList[i].Action(target);
+        }    
 
-        for (int i = 0; i < data.buffList.Count; i++)
-        {
-            switch (data.buffList[i].target)
-            {
-                case BUFF_TARGET.Player:
-                    {
-                        player.AddBuff(data.buffList[i]);
-                    }
-                    break;
-                case BUFF_TARGET.Enemy:
-                    {
-                        if (data.buffList[i].applyAllEnemies)
-                        {
-                            for (int j = 0; j < enemyList.Count; i++)
-                            {
-                                enemyList[i].AddBuff(data.buffList);
-                            }
-                        }
-                        else
-                        {
-                            target.AddBuff(data.buffList);
-                        }
-                    }
-                    break;
-            }
-        }
-    }
+        //switch (data.type)
+        //{
+        //    case CARD_TYPE.ATTACK:
+        //        {
+        //            AttackCard card = (AttackCard)data;
+        //            if (target != null)
+        //            {
+        //                target.Damage(card.damage);
+        //            }
+        //            else
+        //            {
+        //                for (int i = 0; i < enemyList.Count; i++)
+        //                {
+        //                    enemyList[i].Damage(card.damage);
+        //                }
+        //            }
+        //        }
+        //        break;
+        //    case CARD_TYPE.SKILL:
+        //        {
+        //            SkillCard card = (SkillCard)data;
+        //            player.AddDefense(card.block);
+        //        }
+        //        break;
+        //    case CARD_TYPE.POWER:
+        //        break;
+        //    case CARD_TYPE.CURSE:
+        //        break;
+        //    case CARD_TYPE.STATUS:
+        //        break;
+        //}
 
-    public void OnPointerEnter(PointerEventData eventData)
-    {
-        if (state == CARD_STATE.NORMAL)
-        {
-            isLookingAt = true;
-        }
-    }
-
-    public void OnPointerExit(PointerEventData eventData)
-    {
-        isLookingAt = false;
+        //for (int i = 0; i < data.buffList.Count; i++)
+        //{
+        //    switch (data.buffList[i].target)
+        //    {
+        //        case BUFF_TARGET.Player:
+        //            {
+        //                player.AddBuff(data.buffList[i]);
+        //            }
+        //            break;
+        //        case BUFF_TARGET.Enemy:
+        //            {
+        //                if (data.buffList[i].applyAllEnemies)
+        //                {
+        //                    for (int j = 0; j < enemyList.Count; i++)
+        //                    {
+        //                        enemyList[i].AddBuff(data.buffList);
+        //                    }
+        //                }
+        //                else
+        //                {
+        //                    target.AddBuff(data.buffList);
+        //                }
+        //            }
+        //            break;
+        //    }
+        //}
     }
 }

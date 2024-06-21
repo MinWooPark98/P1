@@ -9,10 +9,10 @@ public static class LogManager
 #endif
     }
 
-    public static void LogError(object _message)
+    public static void LogError(object _message, object _classObj, string _methodName = "")
     {
 #if UNITY_EDITOR
-        Debug.Log(string.Format("ERROR :: " + _message));
+        Debug.Log(string.Format("ERROR :: " + _message + "  by " + _classObj.GetType() + " " + _methodName));
 #endif
     }
 

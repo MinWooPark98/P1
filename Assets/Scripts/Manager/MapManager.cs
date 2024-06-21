@@ -272,6 +272,20 @@ public class MapManager : MonoBehaviour
 
     public void EnterRoom(int _floor, int _room)
     {
+        if (currRoom == null)
+        {
+            if (_floor > 0)
+            {
+                LogManager.LogError("currRoom이 없을 때에는 1층만 입장 가능", this, "EnterRoom");
+                return;
+            }
+        }
+        else if (map[currRoom.Item1, currRoom.Item2].nextRooms.Find((room) => room.location.Item1 == _floor && room.location.Item2 == _room) == null)
+        {
+            LogManager.LogError("다음 경로에 없는 방 입장 시도", this, "EnterRoom");
+            return;
+        }
+
         switch (map[_floor, _room].type)
         {
             case MapType.Monster:

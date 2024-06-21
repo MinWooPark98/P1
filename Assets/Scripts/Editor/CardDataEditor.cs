@@ -34,6 +34,52 @@ public class CardDataEditor : Editor
         FieldInfo[] fields = _type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.DeclaredOnly);
         foreach (FieldInfo field in fields)
         {
+            if (field.Name == "actionList")
+            {
+                EditorGUILayout.Space(20);
+
+                EditorGUILayout.LabelField("actionList", EditorStyles.boldLabel);
+
+                EditorGUILayout.Space(6);
+
+                if (cardData.actionList != null)
+                {
+                    for (int i = 0; i < cardData.actionList.Count; i++)
+                    {
+                        GUILayout.BeginVertical(GUI.skin.box);
+                        cardData.actionList[i] = DrawCardActions(cardData.actionList[i]);
+                        if (GUILayout.Button("Remove"))
+                        {
+                            cardData.actionList.RemoveAt(i);
+                        }
+                        GUILayout.EndVertical();
+                    }
+                }
+
+                EditorGUILayout.Space(6);
+
+                GUILayout.BeginHorizontal();
+
+                GUILayoutOption[] optionButtons = new[] { GUILayout.ExpandWidth(true) };
+                CardAction.ICardAction.ActionType type = CardAction.ICardAction.ActionType.Attack;
+                type = (CardAction.ICardAction.ActionType)EditorGUILayout.EnumPopup(type, optionButtons);
+
+                if (GUILayout.Button("Add CardAction", optionButtons))
+                {
+                    cardData.AddAction(type);
+                }
+                GUILayout.EndHorizontal();
+
+                if (GUILayout.Button("Removel All CardActions"))
+                {
+                    cardData.ClearActionList();
+                }
+
+                EditorGUILayout.Space(14);
+
+                continue;
+            }
+
             if (field.IsPublic || field.GetCustomAttribute<SerializeField>() != null)
             {
                 SerializedProperty property = serializedObject.FindProperty(field.Name);
@@ -105,5 +151,41 @@ public class CardDataEditor : Editor
                 }
             }
         }
+    }
+
+    private T DrawCardActions<T>(T _action) where T : CardAction.ICardAction
+    {
+        FieldInfo[] fields = _action.GetType().GetFields();
+        foreach (FieldInfo field in fields)
+        {
+            object value = field.GetValue(_action);
+            if (value is int intValue)
+            {
+                intValue = EditorGUILayout.IntField(field.Name, intValue);
+                field.SetValue(_action, intValue);
+            }
+            else if (value is float floatValue)
+            {
+                floatValue = EditorGUILayout.FloatField(field.Name, floatValue);
+                field.SetValue(_action, floatValue);
+            }
+            else if (value is string stringValue)
+            {
+                stringValue = EditorGUILayout.TextField(field.Name, stringValue);
+                field.SetValue(_action, stringValue);
+            }
+            else if (value is bool boolValue)
+            {
+                boolValue = EditorGUILayout.Toggle(field.Name, boolValue);
+                field.SetValue(_action, boolValue);
+            }
+            else if (value is CardAction.ICardAction.TargetType targetTypeValue)
+            {
+                targetTypeValue = (CardAction.ICardAction.TargetType)EditorGUILayout.EnumPopup(field.Name, targetTypeValue);
+                field.SetValue(_action, targetTypeValue);
+            }
+        }
+
+        return _action;
     }
 }

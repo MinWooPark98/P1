@@ -7,7 +7,7 @@ public enum CARD_TYPE
     SKILL,              // 스킬 카드
     POWER,              // 파워 카드
     CURSE,              // 저주 카드
-    CC,                 // 상태이상 카드
+    STATUS,                 // 상태이상 카드
 }
 
 public enum CARD_RARITY

@@ -13,18 +13,13 @@ MonoBehaviour:
   m_Name: Bash
   m_EditorClassIdentifier: 
   type: 0
+  id: 0
   idName: Bash
   idDesc: Deal {0} damage. Apply 2 <color=orange>Vulnerable</color>.
   rarity: 0
   enhanced: 0
   energy: 2
-  buffList:
-  - target: 1
-    iconName: 
-    type: 11018
-    value: 2
-    applySelf: 0
-    applyAllEnemies: 0
+  buffList: []
   featureList: []
   damage: 8
   atkAllEnemies: 0

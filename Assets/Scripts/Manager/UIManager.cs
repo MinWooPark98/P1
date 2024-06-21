@@ -67,6 +67,9 @@ public class UIManager : MonoBehaviour
             dictPopup.Clear();
         }
 
+        UIManager.Instance.AddPopup("PopupCardEditor", "Prefabs/Editor/Popup/PopupCardEditor");
+        UIManager.Instance.AddPopup("PopupCardEditorMenu", "Prefabs/Editor/Popup/PopupCardEditorMenu");
+
         UIManager.Instance.AddPopup("PopupBattle", "Prefabs/UI/Popups/PopupBattle");
         UIManager.Instance.AddPopup("PopupDrawPile", "Prefabs/UI/Popups/PopupDrawPile");
         UIManager.Instance.AddPopup("PopupDiscardPile", "Prefabs/UI/Popups/PopupDiscardPile");

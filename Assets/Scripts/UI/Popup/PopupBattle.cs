@@ -418,7 +418,18 @@ public class PopupBattle : Popup
                             }
                             else
                             {
-                                if (newCard.GetData().GetType() == typeof(AttackCard) && ((AttackCard)newCard.GetData()).atkAllEnemies == true)
+                                bool isTargetCard = false;
+                                var actionList = newCard.GetData().actionList;
+                                for (int i = 0; i < actionList.Count; i++)
+                                {
+                                    if (actionList[i].TypeTarget == CardAction.ICardAction.TargetType.SingleEnemy)
+                                    {
+                                        isTargetCard = true;
+                                        break;
+                                    }
+                                }
+
+                                if (isTargetCard)
                                 {
                                     StartTargeting(newCard);
                                 }

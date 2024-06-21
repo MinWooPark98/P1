@@ -20,7 +20,7 @@ public partial class BattleManager : MonoBehaviour
     {
         if (drawCount <= 0)
         {
-            LogManager.LogError("drawCount <= 0 인데, DrawCard 실행");
+            LogManager.LogError("drawCount <= 0 인데, DrawCard 실행", this, "DrawCard");
             return;
         }
         
@@ -77,7 +77,7 @@ public partial class BattleManager : MonoBehaviour
     {
         if (energy < _energyCost)
         {
-            LogManager.LogError("에너지 부족 - 이 메소드까지 오면 안 됨");
+            LogManager.LogError("에너지 부족 - 이 메소드까지 오면 안 됨", this, "UseEnergy");
             return;
         }
         SetEnergy(energy - _energyCost);

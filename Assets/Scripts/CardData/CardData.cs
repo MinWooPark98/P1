@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using CardAction;
 
 public abstract class CardData : ScriptableObject
 {
@@ -27,9 +28,6 @@ public abstract class CardData : ScriptableObject
     // id로 바꿀 거임 - 테이블 만들면
     public string idName = string.Empty;
 
-    // id로 바꿀 거임 - 테이블 만들면
-    public string idDesc = string.Empty;
-
     //[SerializeField]
     public CARD_RARITY rarity = CARD_RARITY.NONE;                 // 희귀도
     
@@ -38,13 +36,42 @@ public abstract class CardData : ScriptableObject
 
     //[SerializeField]
     public int energy = 0;                                      // 소모하는 에너지 값
-    
+
+    [SerializeField]
+    public List<ICardAction> actionList = null;
+
     //[SerializeReference]
     //[SerializeField]
     public List<BuffData> buffList = null;                          // 카드 사용시 적용하는 버프
 
     //[SerializeField]
     public List<CardFeature> featureList = null;                // 카드 특성 (휘발성, 소멸 등)
+
+
+    public void AddAction(ICardAction.ActionType _type)
+    {
+        ICardAction cardAction = null;
+        switch (_type)
+        {
+            case ICardAction.ActionType.Attack:
+                cardAction = new Attack();
+                break;
+        }
+
+        if (cardAction != null)
+        {
+            if (actionList == null)
+            {
+                actionList = new List<ICardAction>();
+            }
+            actionList.Add(cardAction);
+        }
+    }
+
+    public void ClearActionList()
+    {
+        actionList.Clear();
+    }
 
     public void AddBuff(BuffData _buff)
     {

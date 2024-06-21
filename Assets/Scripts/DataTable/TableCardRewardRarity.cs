@@ -45,7 +45,7 @@ public class TableCardRewardRarity : DataTable
             }
         }
 
-        LogManager.LogError(GetType().ToString() + "_조건에 맞는 데이터 없음");
+        LogManager.LogError(GetType().ToString() + "_조건에 맞는 데이터 없음", this);
         return books[0];
     }
 }
