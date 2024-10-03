@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -63,7 +65,7 @@ public static class Utils
         }
     }
 
-    public static T ResourceLoad<T>(string _szPath) where T : Object
+    public static T ResourceLoad<T>(string _szPath) where T : UnityEngine.Object
     {
         T temp = Resources.Load<T>(_szPath);
         if (IsNull(temp))
@@ -85,6 +87,30 @@ public static class Utils
         }
 
         return _list;
+    }
+
+    /// <summary>
+    /// 타입의 필드를 부모 클래스부터 가져오기
+    /// </summary>
+    /// <param name="type"></param>
+    /// <returns></returns>
+    public static FieldInfo[] GetFields(System.Type type)
+    {
+        // 현재 타입의 필드 가져오기
+        var fields = type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+
+        // 부모 클래스의 필드도 가져오기
+        System.Type baseType = type.BaseType;
+        if (baseType != null && baseType != typeof(object))
+        {
+            var parentFields = GetFields(baseType);
+            FieldInfo[] result = new FieldInfo[fields.Length];
+            parentFields.CopyTo(result, 0);
+            Array.Copy(fields, 0, result, parentFields.Length, fields.Length - parentFields.Length);
+            fields = result;
+        }
+
+        return fields;
     }
 
     /// <summary>
@@ -115,6 +141,16 @@ public static class Utils
     public static Vector3 BezierCurvesVector3(Vector3 v1, Vector3 v2, Vector3 v3, float _fDuration)
     {
         return new Vector3(BezierCurvesFloat(v1.x, v2.x, v3.x, _fDuration), BezierCurvesFloat(v1.y, v2.y, v3.y, _fDuration), BezierCurvesFloat(v1.z, v2.z, v3.z, _fDuration));
+    }
+
+    /// <summary>
+    /// 문자열에서 정수를 제외한 값은 모두 제거
+    /// </summary>
+    /// <param name="_str"></param>
+    /// <returns></returns>
+    public static string GetIntFromText(string _str)
+    {
+        return System.Text.RegularExpressions.Regex.Replace(_str, @"[^0-9]", "");
     }
 
     /// <summary>
@@ -194,7 +230,7 @@ public static class Utils
         string sz = "";
         for (int i = 0; i < _nCount; i++)
         {
-            int rndVal = Random.Range(0, 62);
+            int rndVal = UnityEngine.Random.Range(0, 62);
             if (rndVal < 10)
             {
                 sz += rndVal;

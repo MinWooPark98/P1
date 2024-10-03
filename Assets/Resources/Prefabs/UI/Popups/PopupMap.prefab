@@ -183,6 +183,7 @@ MonoBehaviour:
   scrollRect: {fileID: 817842151002124921}
   prefabPathDrawer: {fileID: 7956436063194193791, guid: 6a6d3278d8494014e94ea49716f1583e, type: 3}
   parentPaths: {fileID: 8505885819849348306}
+  speedReposition: 2
 --- !u!1 &6315530846194598748
 GameObject:
   m_ObjectHideFlags: 0

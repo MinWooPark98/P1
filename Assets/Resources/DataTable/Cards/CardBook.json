@@ -1,0 +1,106 @@
+{
+  "allCardList": [
+    {
+      "type": 0,
+      "id": 0,
+      "idName": "Attack",
+      "rarity": 0,
+      "enhanced": 0,
+      "energy": 1,
+      "actionList": [
+        {
+          "$type": "CardAction.SingleAttack, Assembly-CSharp",
+          "damage": 6,
+          "actionType": 0,
+          "targetType": 1,
+          "buffs": []
+        }
+      ],
+      "buffList": [],
+      "featureList": []
+    },
+    {
+      "type": 0,
+      "id": 1,
+      "idName": "Attack",
+      "rarity": 0,
+      "enhanced": 1,
+      "energy": 1,
+      "actionList": [
+        {
+          "$type": "CardAction.SingleAttack, Assembly-CSharp",
+          "damage": 9,
+          "actionType": 0,
+          "targetType": 1,
+          "buffs": []
+        }
+      ],
+      "buffList": [],
+      "featureList": []
+    },
+    {
+      "type": 1,
+      "id": 2,
+      "idName": "Defense",
+      "rarity": 0,
+      "enhanced": 0,
+      "energy": 1,
+      "actionList": [
+        {
+          "$type": "CardAction.Defense, Assembly-CSharp",
+          "defense": 5,
+          "actionType": 0,
+          "targetType": 0,
+          "buffs": []
+        }
+      ],
+      "buffList": [],
+      "featureList": []
+    },
+    {
+      "type": 1,
+      "id": 3,
+      "idName": "Defense",
+      "rarity": 0,
+      "enhanced": 1,
+      "energy": 1,
+      "actionList": [
+        {
+          "$type": "CardAction.Defense, Assembly-CSharp",
+          "defense": 8,
+          "actionType": 0,
+          "targetType": 0,
+          "buffs": []
+        }
+      ],
+      "buffList": [],
+      "featureList": []
+    },
+    {
+      "type": 1,
+      "id": 4,
+      "idName": "Shrug it Off",
+      "rarity": 1,
+      "enhanced": 0,
+      "energy": 1,
+      "actionList": [
+        {
+          "$type": "CardAction.Defense, Assembly-CSharp",
+          "defense": 8,
+          "actionType": 0,
+          "targetType": 0,
+          "buffs": null
+        },
+        {
+          "$type": "CardAction.DrawCard, Assembly-CSharp",
+          "drawCount": 1,
+          "actionType": 0,
+          "targetType": 0,
+          "buffs": null
+        }
+      ],
+      "buffList": [],
+      "featureList": []
+    }
+  ]
+}

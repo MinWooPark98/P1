@@ -1,8 +1,12 @@
+using CardAction;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using static CardAction.CardAction;
 
 public class PopupCardEditorMenu : Popup
 {
@@ -11,12 +15,29 @@ public class PopupCardEditorMenu : Popup
     [SerializeField]
     private ItemCard prefabItemCard = null;
 
+    [SerializeField]
+    private TMP_Dropdown dropDownCardType = null;
+
 
     private List<ItemCard> cardList = new List<ItemCard>();
 
 
     protected override void Awake()
     {
+        dropDownCardType.options.Clear();
+        string[] listCardType = Enum.GetNames(typeof(CARD_TYPE));
+        for (int i = 0; i < listCardType.Length; i++)
+        {
+            CARD_TYPE cardType = CARD_TYPE.NONE;
+            if (Enum.TryParse(listCardType[i], out cardType))
+            {
+                if (cardType != CARD_TYPE.NONE)
+                {
+                    dropDownCardType.options.Add(new TMP_Dropdown.OptionData(listCardType[i]));
+                }
+            }
+        }
+
         UpdateCards();
 
         base.Awake();
@@ -28,7 +49,6 @@ public class PopupCardEditorMenu : Popup
         {
             cardList[i].transform.localScale = (cardList[i].GetLookingAt() ? 1f : 0.8f) * Vector3.one;
         }
-
         base.Update();
     }
 
@@ -40,7 +60,7 @@ public class PopupCardEditorMenu : Popup
         }
         cardList.Clear();
 
-        var allCardList = Resources.LoadAll<CardData>("Scriptables/CardData").ToList();
+        var allCardList = CardManager.Instance.GetAllCardList();
         for (int i = 0; i < allCardList.Count; i++)
         {
             ItemCard item = Instantiate(prefabItemCard, scrollRect.content);
@@ -52,7 +72,34 @@ public class PopupCardEditorMenu : Popup
                 {
                     PopupCardEditor popupCardEditor = UIManager.Instance.MakePopup<PopupCardEditor>();
                     popupCardEditor.Set(item.GetData());
+                    popupCardEditor.SetAction(UpdateCards);
                 });
+            cardList.Add(item);
         }
+    }
+
+    public void ButtonNewCard()
+    {
+        if (Enum.IsDefined(typeof(CARD_TYPE), dropDownCardType.value) == false)
+        {
+            LogManager.Log("잘못된 카드 타입");
+            return;
+        }
+
+        CardData newCard = new CardData();
+        newCard.type = (CARD_TYPE)dropDownCardType.value;
+        CardManager.Instance.AddNewCard(newCard);
+        ItemCard item = Instantiate(prefabItemCard, scrollRect.content);
+        item.Set(newCard);
+        item.transform.localScale = 0.8f * Vector3.one;
+        item.SetState(ItemCard.CARD_STATE.NORMAL);
+        item.SetActionClicked(
+            () =>
+            {
+                PopupCardEditor popupCardEditor = UIManager.Instance.MakePopup<PopupCardEditor>();
+                popupCardEditor.Set(item.GetData());
+                popupCardEditor.SetAction(UpdateCards);
+            });
+        cardList.Add(item);
     }
 }

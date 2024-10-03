@@ -1,11 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class CharacterBattleUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
+public class CharacterBattleUI : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler, IHpListner, IBuffListner, IDefenseListner
 {
     [SerializeField]
     private TMP_Text textHp = null;
@@ -36,7 +37,7 @@ public class CharacterBattleUI : MonoBehaviour, IPointerEnterHandler, IPointerEx
     private bool onPointer = false;
 
 
-    public void Init(int _currHp, int _maxHp, List<BuffData> _buffList)
+    public void Init(int _currHp, int _maxHp, IReadOnlyList<BuffData> _buffList)
     {
         //textHp.text = string.Format(_currHp + " / " + _maxHp);
         //float hpPercentage = GetHpPercentage(_currHp, _maxHp);
@@ -46,8 +47,13 @@ public class CharacterBattleUI : MonoBehaviour, IPointerEnterHandler, IPointerEx
         SetBuffs(_buffList);
     }
 
-    public void SetHp(int _currHp, int _maxHp)
+    private void SetHp(int _currHp, int _maxHp)
     {
+        if (_currHp <= 0)           // юс╫ц
+        {
+            gameObject.SetActive(false);
+            return;
+        }
         textHp.text = string.Format(_currHp + " / " + _maxHp);
         imgHpBar.fillAmount = GetHpPercentage(_currHp, _maxHp);
         isApplyingHp = true;
@@ -69,7 +75,7 @@ public class CharacterBattleUI : MonoBehaviour, IPointerEnterHandler, IPointerEx
         objBuff.SetActive(_show);
     }
 
-    public void SetBuffs(List<BuffData> _buffs)
+    public void SetBuffs(IReadOnlyList<BuffData> _buffs)
     {
         string strBuff = string.Empty;
         if (_buffs == null || _buffs.Count == 0)
@@ -123,4 +129,19 @@ public class CharacterBattleUI : MonoBehaviour, IPointerEnterHandler, IPointerEx
     }
 
     public bool GetOnPointer() => onPointer;
+
+    public void OnChangedHp(int _currHp, int _maxHp)
+    {
+        SetHp(_currHp, _maxHp);
+    }
+
+    public void OnChangedBuff(List<BuffData> _buffs)
+    {
+        SetBuffs(_buffs);
+    }
+
+    public void OnChangedDefense(int _defense)
+    {
+        SetDefense(_defense);
+    }
 }

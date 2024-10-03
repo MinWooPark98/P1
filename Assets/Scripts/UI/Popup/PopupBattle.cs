@@ -174,8 +174,9 @@ public class PopupBattle : Popup
                                 }
                                 else
                                 {
-                                    if (cardList[i].GetData().GetType() == typeof(AttackCard) && ((AttackCard)cardList[i].GetData()).atkAllEnemies == false)
+                                    if (cardList[i].GetData().IsTargetCard())
                                     {
+                                        LogManager.Log("IsTargetCard = " + cardList[i].GetData().IsTargetCard());
                                         // 공격카드 타겟팅 시작
                                         StartTargeting(cardList[i]);
                                     }
@@ -201,7 +202,7 @@ public class PopupBattle : Popup
                             List<Enemy> enemyList = BattleManager.Instance.GetEnemyList();
                             for (int j = 0; j < enemyList.Count; j++)
                             {
-                                if (Utils.IsMouseOverRecttTransform(enemyList[j].GetCharacterInfo().GetComponent<RectTransform>()) == true)
+                                if (Utils.IsMouseOverRecttTransform(enemyInfos[j].GetComponent<RectTransform>()) == true) 
                                 {
                                     UseCard(cardList[i], enemyList[j]);
                                     break;
@@ -422,7 +423,7 @@ public class PopupBattle : Popup
                                 var actionList = newCard.GetData().actionList;
                                 for (int i = 0; i < actionList.Count; i++)
                                 {
-                                    if (actionList[i].TypeTarget == CardAction.ICardAction.TargetType.SingleEnemy)
+                                    if (actionList[i].targetType == CardAction.CardAction.TargetType.SingleEnemy)
                                     {
                                         isTargetCard = true;
                                         break;

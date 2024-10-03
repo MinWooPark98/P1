@@ -27,6 +27,8 @@ public class PopupMap : Popup
     // content의 이동하려는 normalizedPosY 값
     private float destination;
     private float lerpReposition = 0f;
+    [SerializeField]
+    private float speedReposition = 1f;
 
     protected override void OnEnable()
     {
@@ -252,7 +254,7 @@ public class PopupMap : Popup
 
     private void UpdateReposition()
     {
-        lerpReposition += Time.deltaTime * 0.01f;
+        lerpReposition += Time.deltaTime * 0.01f * speedReposition;
         float currY = Mathf.Lerp(scrollRect.normalizedPosition.y, destination, lerpReposition);
         if (Mathf.Abs(currY - destination) < 0.001f)
         {
@@ -264,7 +266,7 @@ public class PopupMap : Popup
 
     private void OnDrawGizmos()
     {
-        var paths = MapManager.Instance.GetPaths();
+        var paths = MapManager.Instance?.GetPaths();
         if (paths == null)
         {
             return;

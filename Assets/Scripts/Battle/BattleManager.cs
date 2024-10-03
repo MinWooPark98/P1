@@ -65,6 +65,7 @@ public partial class BattleManager : MonoBehaviour
     //private bool isTargeting = false;
 
     private PopupBattle popupBattle = null;
+    private PopupBattleStart popupBattleStart = null;
     // 테스트용 임시 끝
 
 

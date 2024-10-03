@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -13,7 +14,10 @@ public class Character
         private set
         {
             maxHp = value;
-            characterInfo.SetHp(currHp, maxHp);
+            for (int i = 0; i < listHpListner.Count; i++)
+            {
+                listHpListner[i].OnChangedHp(currHp, maxHp);
+            }
         }
     }
 
@@ -25,7 +29,10 @@ public class Character
         private set
         {
             currHp = value;
-            characterInfo.SetHp(currHp, maxHp);
+            for (int i = 0; i < listHpListner.Count; i++)
+            {
+                listHpListner[i].OnChangedHp(currHp, maxHp);
+            }
             if (currHp <= 0)
             {
                 Die();
@@ -41,25 +48,65 @@ public class Character
         private set
         {
             defense = value;
-            characterInfo.SetDefense(defense);
+            for (int i = 0; i < listDefenseListner.Count; i++)
+            {
+                listDefenseListner[i].OnChangedDefense(defense);
+            }
         }
     }
 
     [SerializeField]
     private List<BuffData> buffList = new List<BuffData>();
+    public IReadOnlyList<BuffData> BuffList
+    {
+        get => buffList;
+    }
 
     private bool isDead = false;
     private System.Action actionDie = null;
 
-    private CharacterBattleUI characterInfo = null;
+    private List<IHpListner> listHpListner = new List<IHpListner>();
+    private List<IBuffListner> listBuffListner = new List<IBuffListner>();
+    private List<IDefenseListner> listDefenseListner = new List<IDefenseListner>();           // 나중에 그냥 buff를 dictionary로 관리하고 거기에 defense 넣을까도 고민중
 
 
-    public void SetCharacterInfo(CharacterBattleUI _characterInfo)
+    public void AddHpListner(IHpListner _hpListner)
     {
-        characterInfo = _characterInfo;
+        if (!listHpListner.Contains(_hpListner))
+        {
+            listHpListner.Add(_hpListner);
+        }
     }
 
-    public CharacterBattleUI GetCharacterInfo() => characterInfo;
+    public void RemoveHpListner(IHpListner _hpListner)
+    {
+        listHpListner.Remove(_hpListner);
+    }
+
+    public void AddBuffListner(IBuffListner _buffListner)
+    {
+        if (!listBuffListner.Contains(_buffListner))
+        {
+            listBuffListner.Add(_buffListner);
+        }
+    }
+
+    public void RemoveBuffListner(IBuffListner _buffListner)
+    {
+        listBuffListner.Remove(_buffListner);
+    }
+    public void AddDefenseListner(IDefenseListner _defenseListner)
+    {
+        if (!listDefenseListner.Contains(_defenseListner))
+        {
+            listDefenseListner.Add(_defenseListner);
+        }
+    }
+
+    public void RemoveDefenseListner(IDefenseListner _defenseListner)
+    {
+        listDefenseListner.Remove(_defenseListner);
+    }
 
     public void Init(int _currHp, int _maxHp, int _defense, List<BuffData> _buffList)
     {
@@ -67,7 +114,7 @@ public class Character
         MaxHp = _maxHp;
         Defense = _defense;
         
-        characterInfo.Init(_currHp, _maxHp, _buffList);
+        //characterInfo.Init(_currHp, _maxHp, _buffList);
     }
 
     /// <summary>
@@ -118,8 +165,6 @@ public class Character
     /// </summary>
     public void Die()
     {
-        characterInfo.gameObject.SetActive(false);              // 티나게 해놓은 임시
-
         isDead = true;
         actionDie?.Invoke();
     }
@@ -159,7 +204,10 @@ public class Character
             buffList.Add(_buff);
         }
 
-        characterInfo.SetBuffs(buffList);
+        for (int i = 0; i < listBuffListner.Count; i++)
+        {
+            listBuffListner[i].OnChangedBuff(buffList);
+        }
     }
 
     /// <summary>

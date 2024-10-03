@@ -7,29 +7,34 @@ public partial class BattleManager : MonoBehaviour
     // INIT
     private void ENTER_INIT()
     {
-        StartCoroutine(UIManager.Instance.routineLoadPopup());
-        DataTableManager.LoadAll();
-
         popupBattle = UIManager.Instance.MakePopup<PopupBattle>();
+        var playerInfo = popupBattle.GetPlayerInfo();
 
         drawPile = Utils.ShuffleList(CardManager.Instance.GetDeckList().ToList());
         player = new Character();
-        player.SetCharacterInfo(popupBattle.GetPlayerInfo());
-        player.Init(30, 30, 6, null);
+        player.AddHpListner(playerInfo);
+        player.AddBuffListner(playerInfo);
+        player.AddDefenseListner(playerInfo);
+        player.Init(30, 30, 6, null);                       // 테스트용
+        playerInfo.Init(player.CurrHp, player.MaxHp, player.BuffList);
         player.SetActionDie(
             () =>
             {
                 ChangeState(BATTLE_STATE.GAMEOVER);
             });
-
         LogManager.Log("플레이어 생성 완료");
+
         enemyList = new List<Enemy>();
         enemyList.Add(new Enemy());
         for (int i = 0; i < enemyList.Count; i++)
         {
             enemyList[i].SetInfo("Enemy1");
-            enemyList[i].SetCharacterInfo(popupBattle.GetEnemyInfos()[i]);
+            var info = popupBattle.GetEnemyInfos()[i];
+            enemyList[i].AddHpListner(info);
+            enemyList[i].AddBuffListner(info);
+            enemyList[i].AddDefenseListner(info);
             enemyList[i].Init(26, 26, 4, null);
+            info.Init(enemyList[i].CurrHp, enemyList[i].MaxHp, enemyList[i].BuffList);
             enemyList[i].SetActionDie(
                 () =>
                 {
@@ -50,18 +55,11 @@ public partial class BattleManager : MonoBehaviour
                 });
         }
         LogManager.Log("적 생성 완료");
-
-        popupBattle.gameObject.SetActive(false);
     }
 
     private void UPDATE_INIT()
     {
-        initTimer -= Time.deltaTime;
-        //LogManager.Log("InitTimer = " + initTimer);
-        if (initTimer <= 0)
-        {
-            ChangeState(BATTLE_STATE.START);
-        }
+        ChangeState(BATTLE_STATE.START);
     }
 
     private void EXIT_INIT()
@@ -73,8 +71,7 @@ public partial class BattleManager : MonoBehaviour
     // START
     private void ENTER_START()
     {
-        popupBattle.gameObject.SetActive(true);
-        LogManager.Log("팝업 배틀 활성화");
+        popupBattleStart = UIManager.Instance.MakePopup<PopupBattleStart>();
     }
 
     private void UPDATE_START()
@@ -88,7 +85,8 @@ public partial class BattleManager : MonoBehaviour
 
     private void EXIT_START()
     {
-
+        popupBattleStart.ButtonClose();
+        popupBattleStart = null;
     }
 
 
@@ -104,21 +102,6 @@ public partial class BattleManager : MonoBehaviour
 
     private void UPDATE_PLAYERTURN()
     {
-        if (Input.GetKeyDown(KeyCode.W))
-        {
-            ChangeState(BATTLE_STATE.WIN);
-        }
-
-        if (Input.GetKeyDown(KeyCode.S))
-        {
-            drawCount++;
-        }
-
-        if (Input.GetKeyDown(KeyCode.A))
-        {
-            AddEnergy(2);
-        }
-
         // 드로우 중에는 다른 행동 불가
         isDrawing = drawCount > 0;
         if (isDrawing)

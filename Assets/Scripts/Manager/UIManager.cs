@@ -67,10 +67,12 @@ public class UIManager : MonoBehaviour
             dictPopup.Clear();
         }
 
-        UIManager.Instance.AddPopup("PopupCardEditor", "Prefabs/Editor/Popup/PopupCardEditor");
-        UIManager.Instance.AddPopup("PopupCardEditorMenu", "Prefabs/Editor/Popup/PopupCardEditorMenu");
+        UIManager.Instance.AddPopup("PopupCardEditor", "Prefabs/CardEditor/Popup/PopupCardEditor");
+        UIManager.Instance.AddPopup("PopupCardEditorMenu", "Prefabs/CardEditor/Popup/PopupCardEditorMenu");
+        UIManager.Instance.AddPopup("PopupCardEditorActions", "Prefabs/CardEditor/Popup/PopupCardEditorActions");
 
         UIManager.Instance.AddPopup("PopupBattle", "Prefabs/UI/Popups/PopupBattle");
+        UIManager.Instance.AddPopup("PopupBattleStart", "Prefabs/UI/Popups/PopupBattleStart");
         UIManager.Instance.AddPopup("PopupDrawPile", "Prefabs/UI/Popups/PopupDrawPile");
         UIManager.Instance.AddPopup("PopupDiscardPile", "Prefabs/UI/Popups/PopupDiscardPile");
         UIManager.Instance.AddPopup("PopupExhaustPile", "Prefabs/UI/Popups/PopupExhaustPile");
