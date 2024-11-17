@@ -219,7 +219,7 @@ public class LineUIDrawer : Image
         // 매 프레임 실행하기 위해 SetVerticesDirty 함수를 실행한다.
         SetVerticesDirty();
     }
-
+#if UNITY_EDITOR
     //__________________________________________________________________________ Editor
     protected override void OnValidate() // 인스펙터 창에서 프로퍼티를 변경할 때 실행되는 함수
     {
@@ -237,6 +237,7 @@ public class LineUIDrawer : Image
         if (tintColor != color)
             color = tintColor;
     }
+#endif
 }
 
 #if UNITY_EDITOR

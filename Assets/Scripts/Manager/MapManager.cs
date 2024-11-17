@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class MapManager : MonoBehaviour
 {
@@ -42,11 +43,14 @@ public class MapManager : MonoBehaviour
 
         popupMap = UIManager.Instance.MakePopup<PopupMap>();
         popupMap.Set();
+
+        KeyboardManager.Instance.AddActionEscape(LoadMenu);
     }
 
     private void OnDestroy()
     {
         s_Instance = null;
+        KeyboardManager.Instance.RemoveActionEscape(LoadMenu);
     }
 
     public Room[,] GetMap() => map;
@@ -293,6 +297,14 @@ public class MapManager : MonoBehaviour
                 }
                 break;
             case MapType.Event:
+                {
+                    PopupEvent popupEvent = UIManager.Instance.MakePopup<PopupEvent>();
+                    popupEvent.SetAction(
+                        () =>
+                        {
+                            MapManager.Instance.ExitRoom();
+                        });
+                }
                 break;
             case MapType.Elite:
                 {
@@ -311,8 +323,24 @@ public class MapManager : MonoBehaviour
                 }
                 break;
             case MapType.Merchant:
+                {
+                    PopupMerchant popupMerchant = UIManager.Instance.MakePopup<PopupMerchant>();
+                    popupMerchant.SetAction(
+                        () =>
+                        {
+                            MapManager.Instance.ExitRoom();
+                        });
+                }
                 break;
             case MapType.Treasure:
+                {
+                    PopupTreasure popupTreasure = UIManager.Instance.MakePopup<PopupTreasure>();
+                    popupTreasure.SetAction(
+                        () =>
+                        {
+                            MapManager.Instance.ExitRoom();
+                        });
+                }
                 break;
             case MapType.Boss:
                 {
@@ -329,5 +357,11 @@ public class MapManager : MonoBehaviour
     public void ExitRoom()
     {
         popupMap.gameObject.SetActive(true);
+    }
+
+    public void LoadMenu()
+    {
+        UIManager.Instance.DeleteAllPopup();
+        SceneManager.LoadScene("MenuScene");
     }
 }

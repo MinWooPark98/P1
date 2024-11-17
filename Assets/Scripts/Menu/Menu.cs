@@ -11,6 +11,16 @@ public class Menu : MonoBehaviour
         DataTableManager.LoadAll();
     }
 
+    private void Start()
+    {
+        KeyboardManager.Instance.AddActionEscape(Application.Quit);
+    }
+
+    private void OnDestroy()
+    {
+        KeyboardManager.Instance.RemoveActionEscape(Application.Quit);
+    }
+
     public void ButtonGame()
     {
         SceneManager.LoadScene("GameScene");

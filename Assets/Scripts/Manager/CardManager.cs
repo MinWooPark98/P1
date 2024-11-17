@@ -125,18 +125,17 @@ public class CardManager : MonoBehaviour
                 TypeNameHandling = TypeNameHandling.Auto,
                 Formatting = Formatting.Indented
             });
-        //PlayerPrefs.SetString("CardBook", jsonData);
 
         // 디버그용
-        File.WriteAllText("Assets/Resources/DataTable/Cards/CardBook.json", jsonData);
+        File.WriteAllText(Path.Combine(Application.streamingAssetsPath, "CardBook.json"), jsonData);
     }
 
     public void LoadBook()
     {
-        //string jsonData = PlayerPrefs.GetString("CardBook");
-        if (File.Exists("Assets/Resources/DataTable/Cards/CardBook.json"))
+        string path = Path.Combine(Application.streamingAssetsPath, "CardBook.json");
+        if (File.Exists(path))
         {
-            string jsonData = File.ReadAllText("Assets/Resources/DataTable/Cards/CardBook.json");
+            string jsonData = File.ReadAllText(path);
             if (string.IsNullOrEmpty(jsonData) == false)
             {
                 cardBook = JsonConvert.DeserializeObject<CardBook>(jsonData, new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto });

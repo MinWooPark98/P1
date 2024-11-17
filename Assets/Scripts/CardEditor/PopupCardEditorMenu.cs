@@ -101,5 +101,12 @@ public class PopupCardEditorMenu : Popup
                 popupCardEditor.SetAction(UpdateCards);
             });
         cardList.Add(item);
+        StartCoroutine(routine_Reposition());
+    }
+
+    private IEnumerator routine_Reposition()
+    {
+        yield return null;
+        scrollRect.normalizedPosition = new Vector2(scrollRect.normalizedPosition.x, 0f);
     }
 }
