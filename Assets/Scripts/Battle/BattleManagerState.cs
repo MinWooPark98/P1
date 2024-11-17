@@ -11,6 +11,10 @@ public partial class BattleManager : MonoBehaviour
         var playerInfo = popupBattle.GetPlayerInfo();
 
         drawPile = Utils.ShuffleList(CardManager.Instance.GetDeckList().ToList());
+        handCards.Clear();
+        discardPile.Clear();
+        exhaustedCards.Clear();
+
         player = new Character();
         player.AddHpListner(playerInfo);
         player.AddBuffListner(playerInfo);

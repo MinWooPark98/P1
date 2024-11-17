@@ -36,6 +36,18 @@ public class PopupExhaustPile : Popup
         grid.spacing = (1 - CARD_SCALE) * 0.5f * new Vector2(StaticData.CARD_SIZE_WIDTH, StaticData.CARD_SIZE_HEIGHT) + extraSpacing;
     }
 
+    protected override void Start()
+    {
+        KeyboardManager.Instance.AddActionEscape(ButtonClose);
+        base.Start();
+    }
+
+    protected override void OnDestroy()
+    {
+        KeyboardManager.Instance.RemoveActionEscape(ButtonClose);
+        base.OnDestroy();
+    }
+
     protected override void Update()
     {
         for (int i = 0; i < cardList.Count; i++)

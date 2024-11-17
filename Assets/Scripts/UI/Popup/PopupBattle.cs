@@ -176,7 +176,7 @@ public class PopupBattle : Popup
                                 {
                                     if (cardList[i].GetData().IsTargetCard())
                                     {
-                                        LogManager.Log("IsTargetCard = " + cardList[i].GetData().IsTargetCard());
+                                        //LogManager.Log("IsTargetCard = " + cardList[i].GetData().IsTargetCard());
                                         // 공격카드 타겟팅 시작
                                         StartTargeting(cardList[i]);
                                     }

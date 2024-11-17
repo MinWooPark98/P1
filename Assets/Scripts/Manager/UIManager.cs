@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
@@ -67,21 +68,17 @@ public class UIManager : MonoBehaviour
             dictPopup.Clear();
         }
 
-        UIManager.Instance.AddPopup("PopupCardEditor", "Prefabs/CardEditor/Popup/PopupCardEditor");
-        UIManager.Instance.AddPopup("PopupCardEditorMenu", "Prefabs/CardEditor/Popup/PopupCardEditorMenu");
-        UIManager.Instance.AddPopup("PopupCardEditorActions", "Prefabs/CardEditor/Popup/PopupCardEditorActions");
+        var prefabs = Resources.LoadAll("Prefabs/UI/Popups", typeof(Popup));
+        for (int i = 0; i < prefabs.Length; i++)
+        {
+            AddPopup(prefabs[i].name, ((Popup)prefabs[i]).gameObject);
+        }
 
-        UIManager.Instance.AddPopup("PopupBattle", "Prefabs/UI/Popups/PopupBattle");
-        UIManager.Instance.AddPopup("PopupBattleStart", "Prefabs/UI/Popups/PopupBattleStart");
-        UIManager.Instance.AddPopup("PopupDrawPile", "Prefabs/UI/Popups/PopupDrawPile");
-        UIManager.Instance.AddPopup("PopupDiscardPile", "Prefabs/UI/Popups/PopupDiscardPile");
-        UIManager.Instance.AddPopup("PopupExhaustPile", "Prefabs/UI/Popups/PopupExhaustPile");
-        UIManager.Instance.AddPopup("PopupBattleReward", "Prefabs/UI/Popups/PopupBattleReward");
-        UIManager.Instance.AddPopup("PopupBattleRewardCard", "Prefabs/UI/Popups/PopupBattleRewardCard");
-        UIManager.Instance.AddPopup("PopupMap", "Prefabs/UI/Popups/PopupMap");
-        UIManager.Instance.AddPopup("PopupRestSite", "Prefabs/UI/Popups/PopupRestSite");
-        UIManager.Instance.AddPopup("PopupEnhanceCard", "Prefabs/UI/Popups/PopupEnhanceCard");
-        UIManager.Instance.AddPopup("PopupEnhanceCardExpected", "Prefabs/UI/Popups/PopupEnhanceCardExpected");
+        prefabs = Resources.LoadAll("Prefabs/CardEditor/Popup", typeof(Popup));
+        for (int i = 0; i < prefabs.Length; i++)
+        {
+            AddPopup(prefabs[i].name, ((Popup)prefabs[i]).gameObject);
+        }
 
         // 어드레서블 사용
         //AsyncOperationHandle<IList<GameObject>> objectHandle = Addressables.LoadAssetsAsync("PreLoadPopup",

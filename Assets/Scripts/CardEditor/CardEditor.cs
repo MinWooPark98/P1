@@ -6,9 +6,6 @@ public class CardEditor : MonoBehaviour
 {
     private void Awake()
     {
-        StartCoroutine(UIManager.Instance.routineLoadPopup());
-        DataTableManager.LoadAll();
-
         PopupCardEditorMenu popupCardEditor = UIManager.Instance.MakePopup<PopupCardEditorMenu>();
     }
 }

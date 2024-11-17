@@ -35,8 +35,6 @@ public class MapManager : MonoBehaviour
     {
         s_Instance = this;
 
-        StartCoroutine(UIManager.Instance.routineLoadPopup());
-        DataTableManager.LoadAll();
         PlayerDataManager.Instance.SetDeckIds(StaticData.startDeckIronclad.ToList());
         CardManager.Instance.SetDeck(PlayerDataManager.Instance.GetCardIds());
 

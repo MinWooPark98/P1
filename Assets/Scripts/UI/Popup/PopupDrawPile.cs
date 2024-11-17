@@ -46,6 +46,18 @@ public class PopupDrawPile : Popup
         base.Update();
     }
 
+    protected override void Start()
+    {
+        KeyboardManager.Instance.AddActionEscape(ButtonClose);
+        base.Start();
+    }
+
+    protected override void OnDestroy()
+    {
+        KeyboardManager.Instance.RemoveActionEscape(ButtonClose);
+        base.OnDestroy();
+    }
+
     private int GetIndexCardLookingAt()
     {
         for (int i = 0; i < cardList.Count; i++)

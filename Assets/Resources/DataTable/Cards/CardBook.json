@@ -89,14 +89,375 @@
           "defense": 8,
           "actionType": 0,
           "targetType": 0,
-          "buffs": null
+          "buffs": []
         },
         {
           "$type": "CardAction.DrawCard, Assembly-CSharp",
           "drawCount": 1,
           "actionType": 0,
           "targetType": 0,
-          "buffs": null
+          "buffs": []
+        }
+      ],
+      "buffList": [],
+      "featureList": []
+    },
+    {
+      "type": 1,
+      "id": 5,
+      "idName": "Bash",
+      "rarity": 0,
+      "enhanced": 0,
+      "energy": 2,
+      "actionList": [
+        {
+          "$type": "CardAction.SingleAttack, Assembly-CSharp",
+          "damage": 7,
+          "actionType": 0,
+          "targetType": 1,
+          "buffs": []
+        }
+      ],
+      "buffList": [],
+      "featureList": []
+    },
+    {
+      "type": 1,
+      "id": 100,
+      "idName": "CommonEx1",
+      "rarity": 1,
+      "enhanced": 0,
+      "energy": 1,
+      "actionList": [
+        {
+          "$type": "CardAction.SingleAttack, Assembly-CSharp",
+          "damage": 5,
+          "actionType": 0,
+          "targetType": 1,
+          "buffs": []
+        }
+      ],
+      "buffList": [],
+      "featureList": []
+    },
+    {
+      "type": 1,
+      "id": 101,
+      "idName": "CommonEx2",
+      "rarity": 1,
+      "enhanced": 1,
+      "energy": 1,
+      "actionList": [
+        {
+          "$type": "CardAction.SingleAttack, Assembly-CSharp",
+          "damage": 8,
+          "actionType": 0,
+          "targetType": 1,
+          "buffs": []
+        }
+      ],
+      "buffList": [],
+      "featureList": []
+    },
+    {
+      "type": 1,
+      "id": 102,
+      "idName": "CommonEx3",
+      "rarity": 1,
+      "enhanced": 0,
+      "energy": 1,
+      "actionList": [
+        {
+          "$type": "CardAction.SingleAttack, Assembly-CSharp",
+          "damage": 7,
+          "actionType": 0,
+          "targetType": 1,
+          "buffs": []
+        }
+      ],
+      "buffList": [],
+      "featureList": []
+    },
+    {
+      "type": 1,
+      "id": 103,
+      "idName": "CommonEx4",
+      "rarity": 1,
+      "enhanced": 1,
+      "energy": 1,
+      "actionList": [
+        {
+          "$type": "CardAction.SingleAttack, Assembly-CSharp",
+          "damage": 10,
+          "actionType": 0,
+          "targetType": 1,
+          "buffs": []
+        }
+      ],
+      "buffList": [],
+      "featureList": []
+    },
+    {
+      "type": 1,
+      "id": 104,
+      "idName": "CommonEx5",
+      "rarity": 1,
+      "enhanced": 0,
+      "energy": 2,
+      "actionList": [
+        {
+          "$type": "CardAction.SingleAttack, Assembly-CSharp",
+          "damage": 6,
+          "actionType": 0,
+          "targetType": 1,
+          "buffs": []
+        }
+      ],
+      "buffList": [],
+      "featureList": []
+    },
+    {
+      "type": 1,
+      "id": 105,
+      "idName": "CommonEx6",
+      "rarity": 1,
+      "enhanced": 1,
+      "energy": 2,
+      "actionList": [
+        {
+          "$type": "CardAction.SingleAttack, Assembly-CSharp",
+          "damage": 11,
+          "actionType": 0,
+          "targetType": 1,
+          "buffs": []
+        }
+      ],
+      "buffList": [],
+      "featureList": []
+    },
+    {
+      "type": 1,
+      "id": 100,
+      "idName": "UncommonEx1",
+      "rarity": 2,
+      "enhanced": 0,
+      "energy": 1,
+      "actionList": [
+        {
+          "$type": "CardAction.SingleAttack, Assembly-CSharp",
+          "damage": 5,
+          "actionType": 0,
+          "targetType": 1,
+          "buffs": []
+        }
+      ],
+      "buffList": [],
+      "featureList": []
+    },
+    {
+      "type": 1,
+      "id": 101,
+      "idName": "UncommonEx2",
+      "rarity": 2,
+      "enhanced": 1,
+      "energy": 1,
+      "actionList": [
+        {
+          "$type": "CardAction.SingleAttack, Assembly-CSharp",
+          "damage": 8,
+          "actionType": 0,
+          "targetType": 1,
+          "buffs": []
+        }
+      ],
+      "buffList": [],
+      "featureList": []
+    },
+    {
+      "type": 1,
+      "id": 102,
+      "idName": "UncommonEx3",
+      "rarity": 2,
+      "enhanced": 0,
+      "energy": 1,
+      "actionList": [
+        {
+          "$type": "CardAction.SingleAttack, Assembly-CSharp",
+          "damage": 7,
+          "actionType": 0,
+          "targetType": 1,
+          "buffs": []
+        }
+      ],
+      "buffList": [],
+      "featureList": []
+    },
+    {
+      "type": 1,
+      "id": 103,
+      "idName": "UncommonEx4",
+      "rarity": 2,
+      "enhanced": 1,
+      "energy": 1,
+      "actionList": [
+        {
+          "$type": "CardAction.SingleAttack, Assembly-CSharp",
+          "damage": 10,
+          "actionType": 0,
+          "targetType": 1,
+          "buffs": []
+        }
+      ],
+      "buffList": [],
+      "featureList": []
+    },
+    {
+      "type": 1,
+      "id": 104,
+      "idName": "UncommonEx5",
+      "rarity": 2,
+      "enhanced": 0,
+      "energy": 2,
+      "actionList": [
+        {
+          "$type": "CardAction.SingleAttack, Assembly-CSharp",
+          "damage": 6,
+          "actionType": 0,
+          "targetType": 1,
+          "buffs": []
+        }
+      ],
+      "buffList": [],
+      "featureList": []
+    },
+    {
+      "type": 1,
+      "id": 105,
+      "idName": "UncommonEx6",
+      "rarity": 2,
+      "enhanced": 1,
+      "energy": 2,
+      "actionList": [
+        {
+          "$type": "CardAction.SingleAttack, Assembly-CSharp",
+          "damage": 11,
+          "actionType": 0,
+          "targetType": 1,
+          "buffs": []
+        }
+      ],
+      "buffList": [],
+      "featureList": []
+    },
+    {
+      "type": 1,
+      "id": 100,
+      "idName": "Rare1",
+      "rarity": 3,
+      "enhanced": 0,
+      "energy": 1,
+      "actionList": [
+        {
+          "$type": "CardAction.SingleAttack, Assembly-CSharp",
+          "damage": 5,
+          "actionType": 0,
+          "targetType": 1,
+          "buffs": []
+        }
+      ],
+      "buffList": [],
+      "featureList": []
+    },
+    {
+      "type": 1,
+      "id": 101,
+      "idName": "Rare2",
+      "rarity": 3,
+      "enhanced": 1,
+      "energy": 1,
+      "actionList": [
+        {
+          "$type": "CardAction.SingleAttack, Assembly-CSharp",
+          "damage": 8,
+          "actionType": 0,
+          "targetType": 1,
+          "buffs": []
+        }
+      ],
+      "buffList": [],
+      "featureList": []
+    },
+    {
+      "type": 1,
+      "id": 102,
+      "idName": "Rare3",
+      "rarity": 3,
+      "enhanced": 0,
+      "energy": 1,
+      "actionList": [
+        {
+          "$type": "CardAction.SingleAttack, Assembly-CSharp",
+          "damage": 7,
+          "actionType": 0,
+          "targetType": 1,
+          "buffs": []
+        }
+      ],
+      "buffList": [],
+      "featureList": []
+    },
+    {
+      "type": 1,
+      "id": 103,
+      "idName": "Rare4",
+      "rarity": 3,
+      "enhanced": 1,
+      "energy": 1,
+      "actionList": [
+        {
+          "$type": "CardAction.SingleAttack, Assembly-CSharp",
+          "damage": 10,
+          "actionType": 0,
+          "targetType": 1,
+          "buffs": []
+        }
+      ],
+      "buffList": [],
+      "featureList": []
+    },
+    {
+      "type": 1,
+      "id": 104,
+      "idName": "Rare5",
+      "rarity": 3,
+      "enhanced": 0,
+      "energy": 2,
+      "actionList": [
+        {
+          "$type": "CardAction.SingleAttack, Assembly-CSharp",
+          "damage": 6,
+          "actionType": 0,
+          "targetType": 1,
+          "buffs": []
+        }
+      ],
+      "buffList": [],
+      "featureList": []
+    },
+    {
+      "type": 1,
+      "id": 105,
+      "idName": "Rare6",
+      "rarity": 3,
+      "enhanced": 1,
+      "energy": 2,
+      "actionList": [
+        {
+          "$type": "CardAction.SingleAttack, Assembly-CSharp",
+          "damage": 11,
+          "actionType": 0,
+          "targetType": 1,
+          "buffs": []
         }
       ],
       "buffList": [],

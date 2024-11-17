@@ -36,6 +36,13 @@ public class ItemCardAction : MonoBehaviour
     public void Set(string _name, System.Object _value)
     {
         textName.text = _name;
+
+        // 임시 조치 (현재 Buffs를 에디터 씬에서 설정하지 못하는데, 이 때 빈 List가 오면 중간에 null로 바뀜)
+        if (_value == null)
+        {
+            return;
+        }
+
         valueType = _value.GetType();
 
         if (valueType == typeof(CardAction.CardAction.ActionType))

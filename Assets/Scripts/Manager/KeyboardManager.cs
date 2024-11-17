@@ -34,6 +34,7 @@ public class KeyboardManager : MonoBehaviour
 
     // 인풋이 필요한 스크립트 순차적으로 리스트에 담아서 가장 뒤에 있는 스크립트에서만 입력 받도록
     private List<System.Object> listObjInputValid = new List<System.Object>();
+    private List<System.Action> listActionEscape = new List<System.Action>();
 
 
     private void Awake()
@@ -45,6 +46,14 @@ public class KeyboardManager : MonoBehaviour
     private void OnDestroy()
     {
         s_Instance = null;
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            EscapeEvent();
+        }
     }
 
     public void AddObjInputNeed(System.Object _obj)
@@ -98,5 +107,31 @@ public class KeyboardManager : MonoBehaviour
         }
 
         return Input.GetKeyUp(_keyCode);
+    }
+
+    public void AddActionEscape(System.Action _action)
+    {
+        listActionEscape.Add(_action);
+    }
+
+    public void RemoveActionEscape(System.Action _action)
+    {
+        if (listActionEscape.Contains(_action))
+        {
+            listActionEscape.Remove(_action);
+        }
+    }
+
+    private void EscapeEvent()
+    {
+        if (listActionEscape.Count > 0)
+        {
+            System.Action action = listActionEscape[listActionEscape.Count - 1];
+            if (action != null)
+            {
+                action.Invoke();
+                RemoveActionEscape(action);
+            }
+        }
     }
 }
