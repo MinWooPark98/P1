@@ -1,66 +1,58 @@
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using CardAction;
-using System;
 using System.Reflection;
-using UnityEditor;
-using TMPro;
-using UnityEngine.UI;
+using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class ItemCardEditorAction : MonoBehaviour, IPointerClickHandler
+public class ItemBuffEditor : MonoBehaviour
 {
-    private Dictionary<string, ItemCardAction> dictField = new Dictionary<string, ItemCardAction>();
+    private Dictionary<string, ItemBuffEditorElement> dictField = new Dictionary<string, ItemBuffEditorElement>();
     [SerializeField]
     private RectTransform parent = null;
     [SerializeField]
-    private ItemCardAction prefabItemAction = null;
+    private ItemBuffEditorElement prefabElement = null;
     [SerializeField]
     private GameObject objSelected = null;
     private bool isSelected = false;
 
-    private CardAction.CardAction actionData = null;
+    private BuffData data;
 
     private System.Action actionClicked = null;
 
-
-    private void Awake()
+    public void Set(BuffData _data)
     {
-        
-    }
+        data = _data;
+        Utils.DeleteChild(parent);
+        dictField.Clear();
 
-    public void Set(CardAction.CardAction _action)
-    {
-        actionData = _action;
-
-        FieldInfo[] fields = Utils.GetFields(actionData.GetType());        
+        FieldInfo[] fields = Utils.GetFields(data.GetType());
         foreach (FieldInfo field in fields)
         {
-            object value = field.GetValue(actionData);
-            ItemCardAction item = Instantiate(prefabItemAction, parent);
-            item.Set(field.Name, value);
+            object value = field.GetValue(data);
+            ItemBuffEditorElement item = Instantiate(prefabElement, parent);
+            item.Set(field.Name, value, data.target, () => { Set(GetData()); });
             dictField.Add(field.Name, item);
         }
     }
 
-    public CardAction.CardAction GetAction()
+    public BuffData GetData()
     {
-        FieldInfo[] fields = Utils.GetFields(actionData.GetType());
-        
+        FieldInfo[] fields = Utils.GetFields(data.GetType());
+
+        object dataBoxed = data;
         foreach (var field in fields)
         {
             foreach (var elem in dictField)
             {
                 if (field.Name == elem.Key)
                 {
-                    field.SetValue(actionData, elem.Value.GetValue());
+                    field.SetValue(dataBoxed, elem.Value.GetValue());
                     continue;
                 }
             }
         }
-
-        return actionData;
+        data = (BuffData)dataBoxed;
+        return data;
     }
 
     public void SetActionClicked(System.Action _actionClicked)
@@ -80,7 +72,7 @@ public class ItemCardEditorAction : MonoBehaviour, IPointerClickHandler
         objSelected.SetActive(false);
     }
 
-    public void OnPointerClick(PointerEventData eventData)
+    public void ButtonItem()
     {
         actionClicked?.Invoke();
     }

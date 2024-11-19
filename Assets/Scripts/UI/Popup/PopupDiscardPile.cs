@@ -20,7 +20,6 @@ public class PopupDiscardPile : Popup
 
     public void SetCards(List<CardData> _cardDataList)
     {
-        _cardDataList = Utils.ShuffleList(_cardDataList);
         for (int i = 0; i < _cardDataList.Count; i++)
         {
             ItemCard itemCard = Instantiate(prefabCard, grid.transform);

@@ -12,13 +12,13 @@ public class PopupCardEditorActions : Popup
     [SerializeField]
     private ScrollRect scrollRect = null;
     [SerializeField]
-    private ItemCardEditorAction prefabItem = null;
+    private ItemCardActionEditor prefabItem = null;
 
     [SerializeField]
     private TMP_Dropdown dropDownAddAction = null;
 
-    private List<ItemCardEditorAction> listAction = new List<ItemCardEditorAction>();
-    private ItemCardEditorAction actionSelected = null;
+    private List<ItemCardActionEditor> listAction = new List<ItemCardActionEditor>();
+    private ItemCardActionEditor itemSelected = null;
 
     private CardData cardData = null;
 
@@ -41,19 +41,24 @@ public class PopupCardEditorActions : Popup
             }
         }
 
-        KeyboardManager.Instance.AddObjInputNeed(this);
-
         base.Awake();
+    }
+
+    protected override void OnDestroy()
+    {
+        KeyboardManager.Instance.RemoveObjInputNeed(this);
+        base.OnDestroy();
     }
 
     protected override void Update()
     {
-        if (actionSelected != null)
+        if (itemSelected != null)
         {
             if (KeyboardManager.Instance.GetKeyDown(this, KeyCode.Delete))
             {
-                listAction.Remove(actionSelected);
-                Destroy(actionSelected.gameObject);
+                KeyboardManager.Instance.RemoveObjInputNeed(this);
+                listAction.Remove(itemSelected);
+                Destroy(itemSelected.gameObject);
                 SelectAction(null);
             }
         }
@@ -69,7 +74,7 @@ public class PopupCardEditorActions : Popup
         {
             for (int i = 0; i < cardData.actionList.Count; i++)
             {
-                ItemCardEditorAction item = Instantiate(prefabItem, scrollRect.content);
+                ItemCardActionEditor item = Instantiate(prefabItem, scrollRect.content);
                 item.Set(cardData.actionList[i]);
                 item.SetActionClicked(
                     () =>
@@ -81,18 +86,20 @@ public class PopupCardEditorActions : Popup
         }
     }
 
-    public void SelectAction(ItemCardEditorAction _action)
+    public void SelectAction(ItemCardActionEditor _item)
     {
-        if (actionSelected != null)
+        if (itemSelected != null)
         {
-            actionSelected.Deselect();
+            KeyboardManager.Instance.RemoveObjInputNeed(this);
+            itemSelected.Deselect();
         }
 
-        actionSelected = actionSelected == _action ? null : _action;
+        itemSelected = itemSelected == _item ? null : _item;
 
-        if (actionSelected != null)
+        if (itemSelected != null)
         {
-            actionSelected.Select();
+            KeyboardManager.Instance.AddObjInputNeed(this);
+            itemSelected.Select();
         }
     }
 
@@ -135,7 +142,7 @@ public class PopupCardEditorActions : Popup
 
         action.actionType = actionType;
 
-        ItemCardEditorAction item = Instantiate(prefabItem, scrollRect.content);    
+        ItemCardActionEditor item = Instantiate(prefabItem, scrollRect.content);    
         item.Set(action);
         item.SetActionClicked(
             () =>

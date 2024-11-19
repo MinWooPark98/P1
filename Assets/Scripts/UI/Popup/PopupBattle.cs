@@ -166,10 +166,19 @@ public class PopupBattle : Popup
                             // 마우스가 hand 범위를 벗어났을 때,
                             if (!Utils.IsMouseOverRecttTransform(rectHandArea))
                             {
+                                int usable = cardList[i].GetUsable();
                                 // 에너지가 카드를 사용하기에 부족하면 Deselect
-                                if (cardList[i].GetUsable() == false)
+                                if (usable != 100)
                                 {
-                                    Announce("에너지가 부족해");
+                                    switch (usable)
+                                    {
+                                        case 101:
+                                            Announce("에너지가 부족해");
+                                            break;
+                                        case 102:
+                                            Announce("카드 특성 - 사용불가");
+                                            break;
+                                    }
                                     DeselectCard(cardList[i]);
                                 }
                                 else
@@ -220,11 +229,12 @@ public class PopupBattle : Popup
                         UpdateCardPosition(i, posUsingCard.position, false);
                         if (Vector3.Distance(cardList[i].transform.position, posUsingCard.position) < 5f)
                         {
-                            DiscardCard(cardList[i]);
+                            cardList[i].EndUsing();
                         }
                     }
                     break;
                 case ItemCard.CARD_STATE.DISCARD:
+                    DiscardCard(cardList[i]);
                     break;
                 case ItemCard.CARD_STATE.EXHAUSTED:
                     break;
@@ -423,7 +433,7 @@ public class PopupBattle : Popup
                                 var actionList = newCard.GetData().actionList;
                                 for (int i = 0; i < actionList.Count; i++)
                                 {
-                                    if (actionList[i].targetType == CardAction.CardAction.TargetType.SingleEnemy)
+                                    if (actionList[i].Target == CardAction.CardAction.TargetType.SingleEnemy)
                                     {
                                         isTargetCard = true;
                                         break;
@@ -469,14 +479,19 @@ public class PopupBattle : Popup
     public void UseCard(ItemCard _itemCard, Character _target = null)
     {
         StopTargeting(_itemCard);
-        _itemCard.SetState(ItemCard.CARD_STATE.USING);
         _itemCard.Use(_target);
     }
 
     public void DiscardCard(ItemCard _itemCard)
     {
-        _itemCard.SetState(ItemCard.CARD_STATE.DISCARD);
         BattleManager.Instance.DiscardCard(cardList.IndexOf(_itemCard));
+        cardList.Remove(_itemCard);
+        Destroy(_itemCard.gameObject);
+    }
+
+    public void ExhaustCard(ItemCard _itemCard)
+    {
+        BattleManager.Instance.ExhaustCard(cardList.IndexOf(_itemCard));
         cardList.Remove(_itemCard);
         Destroy(_itemCard.gameObject);
     }
@@ -486,15 +501,31 @@ public class PopupBattle : Popup
     {
         while (cardList.Count > 0)
         {
-            DiscardCard(cardList[0]);
+            if (cardList[0].GetData().featureList.Exists((feature) => feature.type == CARD_FEATURE.EXHAUST))
+            {
+                ExhaustCard(cardList[0]);
+            }
+            else
+            {
+                DiscardCard(cardList[0]);
+            }
         }
     }
 
     public void StartTargeting(ItemCard _itemCard)
     {
-        if (_itemCard.GetUsable() == false)
+        int usable = _itemCard.GetUsable();
+        if (usable != 100)
         {
-            Announce("에너지가 부족해");
+            switch (usable)
+            {
+                case 101:
+                    Announce("에너지가 부족해");
+                    break;
+                case 102:
+                    Announce("카드 특성 - 사용불가");
+                    break;
+            }
             DeselectCard(_itemCard);
             return;
         }

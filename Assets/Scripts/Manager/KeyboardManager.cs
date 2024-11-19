@@ -69,7 +69,7 @@ public class KeyboardManager : MonoBehaviour
         {
             if (listObjInputValid[i] == _obj)
             {
-                listObjInputValid.Remove(i);
+                listObjInputValid.RemoveAt(i);
                 i--;
             }
         }

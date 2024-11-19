@@ -62,9 +62,10 @@ public partial class BattleManager : MonoBehaviour
     /// 카드를 소멸시킨다
     /// </summary>
     /// <param name="_cardData"></param>
-    public void ExhaustCard(CardData _cardData)
+    public void ExhaustCard(int _index)
     {
-        exhaustedCards.Add(_cardData);
+        exhaustedCards.Add(handCards[_index]);
+        handCards.RemoveAt(_index);
     }
 
     public void SetEnergy(int _energy)

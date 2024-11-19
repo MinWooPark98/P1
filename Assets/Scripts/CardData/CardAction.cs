@@ -1,5 +1,7 @@
+using Newtonsoft.Json;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 
@@ -28,8 +30,9 @@ namespace CardAction
             AllEnemies,
         }
 
+        [JsonIgnore]
+        public abstract TargetType Target { get; }
         public ActionType actionType = ActionType.None;
-        public TargetType targetType;
 
         public List<BuffData> buffs = new List<BuffData>();
 
@@ -44,6 +47,8 @@ namespace CardAction
     [System.Serializable]
     public class SingleAttack : CardAction
     {
+        public override TargetType Target => targetType;
+        public TargetType targetType;
         public int damage;
 
         public override void Action(Character _target)
@@ -93,6 +98,8 @@ namespace CardAction
     [System.Serializable]
     public class MultipleAttack : CardAction
     {
+        public override TargetType Target => targetType;
+        public TargetType targetType;
         public int damage;
         public int count;
 
@@ -155,6 +162,7 @@ namespace CardAction
     [System.Serializable]
     public class Defense : CardAction
     {
+        public override TargetType Target => TargetType.MySelf;
         public int defense;
 
         public override void Action(Character _target = null)
@@ -173,6 +181,7 @@ namespace CardAction
     [System.Serializable]
     public class DrawCard : CardAction
     {
+        public override TargetType Target => TargetType.MySelf;
         public int drawCount;
 
         public override void Action(Character _target = null)

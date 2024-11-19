@@ -11,7 +11,6 @@ public struct BuffData
 {
     [ReadOnly]
     public BUFF_TARGET target;
-    public string iconName;
     public BUFF_TYPE type;
     public int value;
     public bool applySelf;
@@ -24,11 +23,9 @@ public struct BuffData
     /// <param name="_type"></param>
     /// <param name="_value"></param>
     /// <param name="_applySelf"></param>
-    /// <param name="_iconName"></param>
-    public BuffData(BUFF_TARGET _target, string _iconName, BUFF_TYPE _type, int _value, bool _applySelf, bool _applyAllEnemies)
+    public BuffData(BUFF_TARGET _target, BUFF_TYPE _type, int _value, bool _applySelf, bool _applyAllEnemies)
     {
         target = _target;
-        iconName = _iconName;
         type = _type;
         value = _value;
         applySelf = _applySelf;

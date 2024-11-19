@@ -1,0 +1,10 @@
+diff a/Assets/Scripts/CardData/CardData.cs b/Assets/Scripts/CardData/CardData.cs	(rejected hunks)
+@@ -27,7 +27,7 @@
+     public int enhanced = 0;                                    // ��ȭ ��ġ
+     public int energy = 0;                                      // �Ҹ��ϴ� ������ ��
+     public List<CardAction.CardAction> actionList = new List<CardAction.CardAction>();
+-    public List<CardFeature> featureList = new List<CardFeature>();                // ī�� Ư�� (�ֹ߼�, �Ҹ� ��)
++    public int feature = 0;                                      // ī�� Ư�� (�ֹ߼�, �Ҹ� ��) - bitflag
+ 
+     public bool IsTargetCard()
+     {

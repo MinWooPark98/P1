@@ -10,13 +10,12 @@
       "actionList": [
         {
           "$type": "CardAction.SingleAttack, Assembly-CSharp",
+          "targetType": 1,
           "damage": 6,
           "actionType": 0,
-          "targetType": 1,
           "buffs": []
         }
       ],
-      "buffList": [],
       "featureList": []
     },
     {
@@ -29,13 +28,12 @@
       "actionList": [
         {
           "$type": "CardAction.SingleAttack, Assembly-CSharp",
+          "targetType": 1,
           "damage": 9,
           "actionType": 0,
-          "targetType": 1,
           "buffs": []
         }
       ],
-      "buffList": [],
       "featureList": []
     },
     {
@@ -50,11 +48,9 @@
           "$type": "CardAction.Defense, Assembly-CSharp",
           "defense": 5,
           "actionType": 0,
-          "targetType": 0,
           "buffs": []
         }
       ],
-      "buffList": [],
       "featureList": []
     },
     {
@@ -69,11 +65,9 @@
           "$type": "CardAction.Defense, Assembly-CSharp",
           "defense": 8,
           "actionType": 0,
-          "targetType": 0,
           "buffs": []
         }
       ],
-      "buffList": [],
       "featureList": []
     },
     {
@@ -88,18 +82,15 @@
           "$type": "CardAction.Defense, Assembly-CSharp",
           "defense": 8,
           "actionType": 0,
-          "targetType": 0,
           "buffs": []
         },
         {
           "$type": "CardAction.DrawCard, Assembly-CSharp",
           "drawCount": 1,
           "actionType": 0,
-          "targetType": 0,
           "buffs": []
         }
       ],
-      "buffList": [],
       "featureList": []
     },
     {
@@ -112,13 +103,12 @@
       "actionList": [
         {
           "$type": "CardAction.SingleAttack, Assembly-CSharp",
+          "targetType": 1,
           "damage": 7,
           "actionType": 0,
-          "targetType": 1,
           "buffs": []
         }
       ],
-      "buffList": [],
       "featureList": []
     },
     {
@@ -131,13 +121,12 @@
       "actionList": [
         {
           "$type": "CardAction.SingleAttack, Assembly-CSharp",
+          "targetType": 1,
           "damage": 5,
           "actionType": 0,
-          "targetType": 1,
           "buffs": []
         }
       ],
-      "buffList": [],
       "featureList": []
     },
     {
@@ -150,13 +139,12 @@
       "actionList": [
         {
           "$type": "CardAction.SingleAttack, Assembly-CSharp",
+          "targetType": 1,
           "damage": 8,
           "actionType": 0,
-          "targetType": 1,
           "buffs": []
         }
       ],
-      "buffList": [],
       "featureList": []
     },
     {
@@ -169,13 +157,12 @@
       "actionList": [
         {
           "$type": "CardAction.SingleAttack, Assembly-CSharp",
+          "targetType": 1,
           "damage": 7,
           "actionType": 0,
-          "targetType": 1,
           "buffs": []
         }
       ],
-      "buffList": [],
       "featureList": []
     },
     {
@@ -188,13 +175,12 @@
       "actionList": [
         {
           "$type": "CardAction.SingleAttack, Assembly-CSharp",
+          "targetType": 1,
           "damage": 10,
           "actionType": 0,
-          "targetType": 1,
           "buffs": []
         }
       ],
-      "buffList": [],
       "featureList": []
     },
     {
@@ -207,13 +193,12 @@
       "actionList": [
         {
           "$type": "CardAction.SingleAttack, Assembly-CSharp",
+          "targetType": 1,
           "damage": 6,
           "actionType": 0,
-          "targetType": 1,
           "buffs": []
         }
       ],
-      "buffList": [],
       "featureList": []
     },
     {
@@ -226,18 +211,17 @@
       "actionList": [
         {
           "$type": "CardAction.SingleAttack, Assembly-CSharp",
+          "targetType": 1,
           "damage": 11,
           "actionType": 0,
-          "targetType": 1,
           "buffs": []
         }
       ],
-      "buffList": [],
       "featureList": []
     },
     {
       "type": 1,
-      "id": 100,
+      "id": 106,
       "idName": "UncommonEx1",
       "rarity": 2,
       "enhanced": 0,
@@ -245,18 +229,17 @@
       "actionList": [
         {
           "$type": "CardAction.SingleAttack, Assembly-CSharp",
+          "targetType": 1,
           "damage": 5,
           "actionType": 0,
-          "targetType": 1,
           "buffs": []
         }
       ],
-      "buffList": [],
       "featureList": []
     },
     {
       "type": 1,
-      "id": 101,
+      "id": 107,
       "idName": "UncommonEx2",
       "rarity": 2,
       "enhanced": 1,
@@ -264,18 +247,17 @@
       "actionList": [
         {
           "$type": "CardAction.SingleAttack, Assembly-CSharp",
+          "targetType": 1,
           "damage": 8,
           "actionType": 0,
-          "targetType": 1,
           "buffs": []
         }
       ],
-      "buffList": [],
       "featureList": []
     },
     {
       "type": 1,
-      "id": 102,
+      "id": 108,
       "idName": "UncommonEx3",
       "rarity": 2,
       "enhanced": 0,
@@ -283,18 +265,17 @@
       "actionList": [
         {
           "$type": "CardAction.SingleAttack, Assembly-CSharp",
+          "targetType": 1,
           "damage": 7,
           "actionType": 0,
-          "targetType": 1,
           "buffs": []
         }
       ],
-      "buffList": [],
       "featureList": []
     },
     {
       "type": 1,
-      "id": 103,
+      "id": 109,
       "idName": "UncommonEx4",
       "rarity": 2,
       "enhanced": 1,
@@ -302,18 +283,17 @@
       "actionList": [
         {
           "$type": "CardAction.SingleAttack, Assembly-CSharp",
+          "targetType": 1,
           "damage": 10,
           "actionType": 0,
-          "targetType": 1,
           "buffs": []
         }
       ],
-      "buffList": [],
       "featureList": []
     },
     {
       "type": 1,
-      "id": 104,
+      "id": 110,
       "idName": "UncommonEx5",
       "rarity": 2,
       "enhanced": 0,
@@ -321,18 +301,17 @@
       "actionList": [
         {
           "$type": "CardAction.SingleAttack, Assembly-CSharp",
+          "targetType": 1,
           "damage": 6,
           "actionType": 0,
-          "targetType": 1,
           "buffs": []
         }
       ],
-      "buffList": [],
       "featureList": []
     },
     {
       "type": 1,
-      "id": 105,
+      "id": 111,
       "idName": "UncommonEx6",
       "rarity": 2,
       "enhanced": 1,
@@ -340,18 +319,17 @@
       "actionList": [
         {
           "$type": "CardAction.SingleAttack, Assembly-CSharp",
+          "targetType": 1,
           "damage": 11,
           "actionType": 0,
-          "targetType": 1,
           "buffs": []
         }
       ],
-      "buffList": [],
       "featureList": []
     },
     {
       "type": 1,
-      "id": 100,
+      "id": 112,
       "idName": "Rare1",
       "rarity": 3,
       "enhanced": 0,
@@ -359,18 +337,17 @@
       "actionList": [
         {
           "$type": "CardAction.SingleAttack, Assembly-CSharp",
+          "targetType": 1,
           "damage": 5,
           "actionType": 0,
-          "targetType": 1,
           "buffs": []
         }
       ],
-      "buffList": [],
       "featureList": []
     },
     {
       "type": 1,
-      "id": 101,
+      "id": 113,
       "idName": "Rare2",
       "rarity": 3,
       "enhanced": 1,
@@ -378,18 +355,17 @@
       "actionList": [
         {
           "$type": "CardAction.SingleAttack, Assembly-CSharp",
+          "targetType": 1,
           "damage": 8,
           "actionType": 0,
-          "targetType": 1,
           "buffs": []
         }
       ],
-      "buffList": [],
       "featureList": []
     },
     {
       "type": 1,
-      "id": 102,
+      "id": 114,
       "idName": "Rare3",
       "rarity": 3,
       "enhanced": 0,
@@ -397,18 +373,17 @@
       "actionList": [
         {
           "$type": "CardAction.SingleAttack, Assembly-CSharp",
+          "targetType": 1,
           "damage": 7,
           "actionType": 0,
-          "targetType": 1,
           "buffs": []
         }
       ],
-      "buffList": [],
       "featureList": []
     },
     {
       "type": 1,
-      "id": 103,
+      "id": 115,
       "idName": "Rare4",
       "rarity": 3,
       "enhanced": 1,
@@ -416,18 +391,17 @@
       "actionList": [
         {
           "$type": "CardAction.SingleAttack, Assembly-CSharp",
+          "targetType": 1,
           "damage": 10,
           "actionType": 0,
-          "targetType": 1,
           "buffs": []
         }
       ],
-      "buffList": [],
       "featureList": []
     },
     {
       "type": 1,
-      "id": 104,
+      "id": 116,
       "idName": "Rare5",
       "rarity": 3,
       "enhanced": 0,
@@ -435,18 +409,17 @@
       "actionList": [
         {
           "$type": "CardAction.SingleAttack, Assembly-CSharp",
+          "targetType": 1,
           "damage": 6,
           "actionType": 0,
-          "targetType": 1,
           "buffs": []
         }
       ],
-      "buffList": [],
       "featureList": []
     },
     {
       "type": 1,
-      "id": 105,
+      "id": 117,
       "idName": "Rare6",
       "rarity": 3,
       "enhanced": 1,
@@ -454,13 +427,12 @@
       "actionList": [
         {
           "$type": "CardAction.SingleAttack, Assembly-CSharp",
+          "targetType": 1,
           "damage": 11,
           "actionType": 0,
-          "targetType": 1,
           "buffs": []
         }
       ],
-      "buffList": [],
       "featureList": []
     }
   ]

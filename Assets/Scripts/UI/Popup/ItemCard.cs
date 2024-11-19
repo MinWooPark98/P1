@@ -124,9 +124,23 @@ public class ItemCard : Button
         actionClicked?.Invoke();
     }
 
-    public bool GetUsable()
+    /// <summary>
+    /// 100: 사용 가능 / 101: 에너지 부족, 102: 사용불가 특성 카드
+    /// </summary>
+    /// <returns></returns>
+    public int GetUsable()
     {
-        return data.energy <= BattleManager.Instance.GetEnergy();
+        if (data.energy > BattleManager.Instance.GetEnergy())
+        {
+            return 101;
+        }
+
+        if (data.featureList.Exists((feature) => feature.type == CARD_FEATURE.UNPLAYABLE))
+        {
+            return 102;
+        }
+
+        return 100;
     }
 
     // 타겟 하나를 지정하는 카드의 경우
@@ -137,10 +151,12 @@ public class ItemCard : Button
             return;
         }
 
-        if (GetUsable() == false)
+        if (GetUsable() != 100)
         {
             return;
         }
+
+        SetState(CARD_STATE.USING);
 
         // 에너지 소모
         BattleManager.Instance.UseEnergy(data.energy);
@@ -211,5 +227,16 @@ public class ItemCard : Button
         //            break;
         //    }
         //}
+    }
+
+    public void EndUsing()
+    {
+        if (data.featureList.Exists((feature) => feature.type == CARD_FEATURE.ETHEREAL))
+        {
+            SetState(CARD_STATE.EXHAUSTED);
+            return;
+        }
+
+        SetState(CARD_STATE.DISCARD);
     }
 }

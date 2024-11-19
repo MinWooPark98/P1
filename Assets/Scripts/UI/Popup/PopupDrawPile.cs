@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -20,7 +21,7 @@ public class PopupDrawPile : Popup
 
     public void SetCards(List<CardData> _cardDataList)
     {
-        _cardDataList = Utils.ShuffleList(_cardDataList);
+        _cardDataList = _cardDataList.OrderByDescending((card) => card.rarity).ThenBy((card) => card.id).ToList();
         for (int i = 0; i < _cardDataList.Count; i++)
         {
             ItemCard itemCard = Instantiate(prefabCard, grid.transform);

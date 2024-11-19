@@ -1,4 +1,3 @@
-using CardAction;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -6,7 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ItemCardAction : MonoBehaviour
+public class ItemBuffEditorElement : MonoBehaviour
 {
     public enum Type
     {
@@ -28,20 +27,16 @@ public class ItemCardAction : MonoBehaviour
     private TMP_InputField inputFieldValue = null;
     [SerializeField]
     private Toggle toggleValue = null;
+    [SerializeField]
+    private TMP_Text toggleText = null;
 
     private Type usingType = Type.None;
     private System.Type valueType = null;
-    
 
-    public void Set(string _name, System.Object _value)
+
+    public void Set(string _name, System.Object _value, BUFF_TARGET _target, System.Action _actionTargetChanged)
     {
         textName.text = _name;
-
-        // 임시 조치 (현재 Buffs를 에디터 씬에서 설정하지 못하는데, 이 때 빈 List가 오면 중간에 null로 바뀜)
-        if (_value == null)
-        {
-            return;
-        }
 
         valueType = _value.GetType();
 
@@ -72,34 +67,78 @@ public class ItemCardAction : MonoBehaviour
         {
             Use(Type.Toggle);
             toggleValue.isOn = boolValue;
-            inputFieldValue.onValueChanged.AddListener((text) => inputFieldValue.text = Utils.GetIntFromText(text));
+            toggleText.text = boolValue.ToString();
+            toggleValue.onValueChanged.AddListener((bValue) => toggleText.text = bValue.ToString());
         }
         else if (_value is Enum enumValue)
         {
             Use(Type.DropDown);
             dropDownValue.options.Clear();
-            bool isNone = false;
-            foreach (var value in Enum.GetValues(valueType))
-            {
-                if ((int)value == -1)
-                {
-                    isNone = true;
-                    break;
-                }
-            }
             string[] listTypeName = Enum.GetNames(valueType);
             for (int i = 0; i < listTypeName.Length; i++)
             {
-                if (isNone)
+                int parse = (int)Enum.Parse(valueType, listTypeName[i]);
+                if (parse == -1)
                 {
-                    if ((int)Enum.Parse(valueType, listTypeName[i]) == -1)
+                    continue;
+                }
+
+                if (valueType == typeof(BUFF_TYPE))
+                {
+                    if (_target == BUFF_TARGET.Player)
                     {
-                        continue;
+                        if (parse >= 13000 && parse < 14000)
+                        {
+                            continue;
+                        }
+                    }
+                    else
+                    {
+                        if (parse >= 12000 && parse < 13000)
+                        {
+                            continue;
+                        }
                     }
                 }
                 dropDownValue.options.Add(new TMP_Dropdown.OptionData(listTypeName[i]));
             }
-            dropDownValue.value = (int)_value;
+
+            if (valueType == typeof(BUFF_TYPE))
+            {
+                BUFF_TYPE type = (BUFF_TYPE)_value;
+                if (_target == BUFF_TARGET.Player)
+                {
+                    if ((int)_value >= 13000 && (int)_value < 14000)
+                    {
+                        _value = BUFF_TYPE.Artifact;
+                    }
+                }
+                else
+                {
+                    if ((int)_value >= 12000 && (int)_value < 13000)
+                    {
+                        _value = BUFF_TYPE.Artifact;
+                    }
+                }
+            }
+
+            for (int i = 0; i < dropDownValue.options.Count; i++)
+            {
+                if (dropDownValue.options[i].text == _value.ToString())
+                {
+                    dropDownValue.value = i;
+                    break;
+                }
+            }
+
+            if (valueType == typeof(BUFF_TARGET))
+            {
+                dropDownValue.onValueChanged.AddListener(
+                    (value) =>
+                    {
+                        _actionTargetChanged?.Invoke();
+                    });
+            }
         }
     }
 
@@ -113,7 +152,7 @@ public class ItemCardAction : MonoBehaviour
                 value = Parse(textValue.text);
                 break;
             case Type.DropDown:
-                value = dropDownValue.value;
+                value = Parse(dropDownValue.options[dropDownValue.value].text);
                 break;
             case Type.InputField:
                 value = Parse(inputFieldValue.text);
@@ -134,23 +173,23 @@ public class ItemCardAction : MonoBehaviour
         {
             return Int32.Parse(_string);
         }
-        
+
         if (valueType == typeof(float))
         {
             return float.Parse(_string);
         }
-        
+
         if (valueType == typeof(string))
         {
             return _string;
         }
-        
+
         if (valueType == typeof(bool))
         {
             bool.Parse(_string);
         }
-        
-        if (valueType == typeof(Enum))
+            
+        if (valueType.IsEnum)
         {
             return Enum.Parse(valueType, _string);
         }

@@ -38,7 +38,7 @@ public enum BUFF_TARGET
     Enemy,                      // 적 대상으로 버프를 주고 싶은 경우  <==  공용 버프 + 적 전용 버프
 }
 
-public enum BUFF_TYPE
+public enum BUFF_TYPE : int
 {
     // 공용 (11000 ~ 11999)
     // 버프
