@@ -450,11 +450,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_IgnoreLayout: 0
-  m_MinWidth: -1
+  m_MinWidth: 500
   m_MinHeight: -1
   m_PreferredWidth: -1
   m_PreferredHeight: 60
-  m_FlexibleWidth: -1
+  m_FlexibleWidth: 1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
 --- !u!1 &3205899562497066592
@@ -523,7 +523,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Add Buff
+  m_text: Add Component
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 416ca5d73547c35478b7d9606eb3abbe, type: 2}
   m_sharedMaterial: {fileID: 6241011758447238980, guid: 416ca5d73547c35478b7d9606eb3abbe, type: 2}
@@ -740,11 +740,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_IgnoreLayout: 0
-  m_MinWidth: -1
+  m_MinWidth: 500
   m_MinHeight: -1
   m_PreferredWidth: -1
   m_PreferredHeight: 60
-  m_FlexibleWidth: -1
+  m_FlexibleWidth: 1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
 --- !u!1 &4584570367673389956
@@ -1196,7 +1196,7 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 140, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4047397883507995819
 CanvasRenderer:
@@ -1325,9 +1325,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1746906592354335611}
   - component: {fileID: 8197661743463894755}
-  - component: {fileID: 3455978843903818028}
+  - component: {fileID: 8056221692702775162}
   m_Layer: 5
-  m_Name: ItemCardActionEditorElement
+  m_Name: ComponentEditorElement
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1376,16 +1376,16 @@ MonoBehaviour:
     m_Right: 0
     m_Top: 0
     m_Bottom: 0
-  m_ChildAlignment: 4
+  m_ChildAlignment: 1
   m_Spacing: 20
   m_ChildForceExpandWidth: 0
   m_ChildForceExpandHeight: 0
-  m_ChildControlWidth: 0
+  m_ChildControlWidth: 1
   m_ChildControlHeight: 1
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
---- !u!114 &3455978843903818028
+--- !u!114 &8056221692702775162
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1394,7 +1394,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 5462626463760739749}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e7463228b9740845b5960e5d01fd668, type: 3}
+  m_Script: {fileID: 11500000, guid: 8f0f418f36269784d97530c684016c3b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   textName: {fileID: 5944634460069978704}
@@ -1403,9 +1403,9 @@ MonoBehaviour:
   inputFieldValue: {fileID: 6472135322686760806}
   toggleValue: {fileID: 5406478131430075775}
   toggleText: {fileID: 2795939998568291996}
-  buffValue: {fileID: 6945186935566263516}
-  parentBuffItem: {fileID: 6394494295742629186}
-  prefabBuffItem: {fileID: 9079259218142522772, guid: 8cd1fb2472c7eb0428b7f2779112d395, type: 3}
+  componentValue: {fileID: 6945186935566263516}
+  prefabComponent: {fileID: -3870896921286800347, guid: 5f60ad1fd8d2f634d8693278cb71a5d8, type: 3}
+  parentComponent: {fileID: 6394494295742629186}
 --- !u!1 &5628893047894227246
 GameObject:
   m_ObjectHideFlags: 0
@@ -2012,8 +2012,9 @@ GameObject:
   - component: {fileID: 7322760055437597074}
   - component: {fileID: 463292670896722331}
   - component: {fileID: 5689990941431360806}
+  - component: {fileID: 7855743113730316279}
   m_Layer: 5
-  m_Name: BuffValue
+  m_Name: ComponentValue
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2069,8 +2070,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 0
+  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
+  m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -2100,11 +2101,31 @@ MonoBehaviour:
   m_Spacing: 6
   m_ChildForceExpandWidth: 0
   m_ChildForceExpandHeight: 0
-  m_ChildControlWidth: 0
+  m_ChildControlWidth: 1
   m_ChildControlHeight: 1
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &7855743113730316279
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6945186935566263516}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IgnoreLayout: 0
+  m_MinWidth: -1
+  m_MinHeight: -1
+  m_PreferredWidth: -1
+  m_PreferredHeight: -1
+  m_FlexibleWidth: 1
+  m_FlexibleHeight: -1
+  m_LayoutPriority: 1
 --- !u!1 &7040318316436166598
 GameObject:
   m_ObjectHideFlags: 0
@@ -2413,9 +2434,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 3455978843903818028}
-        m_TargetAssemblyTypeName: ItemCardActionEditorElement, Assembly-CSharp
-        m_MethodName: ButtonAddBuff
+      - m_Target: {fileID: 8056221692702775162}
+        m_TargetAssemblyTypeName: ComponentEditorElement, Assembly-CSharp
+        m_MethodName: ButtonAddComponent
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2638,7 +2659,7 @@ MonoBehaviour:
   m_Spacing: 4
   m_ChildForceExpandWidth: 0
   m_ChildForceExpandHeight: 0
-  m_ChildControlWidth: 0
+  m_ChildControlWidth: 1
   m_ChildControlHeight: 1
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
@@ -2787,8 +2808,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 0}
-  m_Type: 0
+  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
+  m_Type: 1
   m_PreserveAspect: 0
   m_FillCenter: 1
   m_FillMethod: 4
@@ -2810,11 +2831,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_IgnoreLayout: 0
-  m_MinWidth: -1
+  m_MinWidth: 500
   m_MinHeight: -1
   m_PreferredWidth: -1
   m_PreferredHeight: 60
-  m_FlexibleWidth: -1
+  m_FlexibleWidth: 1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
 --- !u!1 &8445356069993217763
@@ -3009,10 +3030,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_IgnoreLayout: 0
-  m_MinWidth: -1
+  m_MinWidth: 500
   m_MinHeight: -1
   m_PreferredWidth: -1
   m_PreferredHeight: 60
-  m_FlexibleWidth: -1
+  m_FlexibleWidth: 1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1

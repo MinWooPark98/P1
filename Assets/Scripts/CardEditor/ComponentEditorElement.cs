@@ -1,11 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ItemBuffEditorElement : MonoBehaviour
+public class ComponentEditorElement : MonoBehaviour
 {
     public enum Type
     {
@@ -14,6 +15,7 @@ public class ItemBuffEditorElement : MonoBehaviour
         DropDown,
         InputField,
         Toggle,
+        Component,
     }
 
     [SerializeField]
@@ -29,12 +31,22 @@ public class ItemBuffEditorElement : MonoBehaviour
     private Toggle toggleValue = null;
     [SerializeField]
     private TMP_Text toggleText = null;
+    [SerializeField]
+    private GameObject componentValue = null;
+    [SerializeField]
+    private ComponentEditor prefabComponent = null;
+    [SerializeField]
+    private Transform parentComponent = null;
+    private List<ComponentEditor> listComponent = new List<ComponentEditor>();
+    private System.Type typeComponent;
+
+    private ComponentEditor componentSelected = null;
 
     private Type usingType = Type.None;
     private System.Type valueType = null;
 
 
-    public void Set(string _name, System.Object _value, BUFF_TARGET _target, System.Action _actionTargetChanged)
+    public void Set(string _name, System.Object _value)
     {
         textName.text = _name;
 
@@ -82,44 +94,7 @@ public class ItemBuffEditorElement : MonoBehaviour
                 {
                     continue;
                 }
-
-                if (valueType == typeof(BUFF_TYPE))
-                {
-                    if (_target == BUFF_TARGET.Player)
-                    {
-                        if (parse >= 13000 && parse < 14000)
-                        {
-                            continue;
-                        }
-                    }
-                    else
-                    {
-                        if (parse >= 12000 && parse < 13000)
-                        {
-                            continue;
-                        }
-                    }
-                }
                 dropDownValue.options.Add(new TMP_Dropdown.OptionData(listTypeName[i]));
-            }
-
-            if (valueType == typeof(BUFF_TYPE))
-            {
-                BUFF_TYPE type = (BUFF_TYPE)_value;
-                if (_target == BUFF_TARGET.Player)
-                {
-                    if ((int)_value >= 13000 && (int)_value < 14000)
-                    {
-                        _value = BUFF_TYPE.Artifact;
-                    }
-                }
-                else
-                {
-                    if ((int)_value >= 12000 && (int)_value < 13000)
-                    {
-                        _value = BUFF_TYPE.Artifact;
-                    }
-                }
             }
 
             for (int i = 0; i < dropDownValue.options.Count; i++)
@@ -130,19 +105,32 @@ public class ItemBuffEditorElement : MonoBehaviour
                     break;
                 }
             }
-
-            if (valueType == typeof(BUFF_TARGET))
+        }
+        else if (_value.GetType().IsGenericType)
+        {
+            if (_value.GetType().GetGenericTypeDefinition() == typeof(List<>))
             {
-                dropDownValue.onValueChanged.AddListener(
-                    (value) =>
+                Use(Type.Component);
+                typeComponent = _value.GetType().GetGenericArguments()[0];          // 제네릭 인수가 1개인 상황만 상정하고 제작
+                if (_value is IEnumerable listData && listData != null)
+                {
+                    foreach (var data in listData)
                     {
-                        _actionTargetChanged?.Invoke();
-                    });
+                        ComponentEditor newData = Instantiate(prefabComponent, parentComponent);
+                        newData.Set(data);
+                        newData.SetActionClicked(
+                            () =>
+                            {
+                                SelectComponent(newData);
+                            });
+                        listComponent.Add(newData);
+                    }
+                }
             }
         }
     }
 
-    public System.Object GetValue()
+    public object GetValue()
     {
         System.Object value = null;
 
@@ -150,7 +138,7 @@ public class ItemBuffEditorElement : MonoBehaviour
         {
             case Type.Text:
                 value = Parse(textValue.text);
-                break;
+                break;  
             case Type.DropDown:
                 value = Parse(dropDownValue.options[dropDownValue.value].text);
                 break;
@@ -159,6 +147,12 @@ public class ItemBuffEditorElement : MonoBehaviour
                 break;
             case Type.Toggle:
                 value = toggleValue.isOn;
+                break;
+            case Type.Component:
+                System.Type listType = typeof(List<>).MakeGenericType(typeComponent);
+                value = Activator.CreateInstance(listType);
+                var addMethod = listType.GetMethod("Add");
+                addMethod.Invoke(value, listComponent.Select((component) => component.GetData()).ToArray());
                 break;
             default:
                 return null;
@@ -214,6 +208,57 @@ public class ItemBuffEditorElement : MonoBehaviour
             case Type.Toggle:
                 toggleValue.gameObject.SetActive(true);
                 break;
+            case Type.Component:
+                componentValue.gameObject.SetActive(true);
+                break;
         }
+    }
+
+    private void Update()
+    {
+        if (componentSelected != null)
+        {
+            if (KeyboardManager.Instance.GetKeyDown(this, KeyCode.Delete))
+            {
+                KeyboardManager.Instance.RemoveObjInputNeed(this);
+                listComponent.Remove(componentSelected);
+                Destroy(componentSelected.gameObject);
+                SelectComponent(null);
+            }
+        }
+    }
+
+    public void SelectComponent(ComponentEditor _component)
+    {
+        if (componentSelected != null)
+        {
+            KeyboardManager.Instance.RemoveObjInputNeed(this);
+            componentSelected.Deselect();
+        }
+
+        componentSelected = componentSelected == _component ? null : _component;
+
+        if (componentSelected != null)
+        {
+            KeyboardManager.Instance.AddObjInputNeed(this);
+            componentSelected.Select();
+        }
+    }
+
+    public void ButtonAddComponent()
+    {
+        if (usingType != Type.Component)
+        {
+            return;
+        }
+
+        ComponentEditor newComponent = Instantiate(prefabComponent, parentComponent);
+        newComponent.Set(Activator.CreateInstance(typeComponent));
+        newComponent.SetActionClicked(
+            () =>
+            {
+                SelectComponent(newComponent);
+            });
+        listComponent.Add(newComponent);
     }
 }

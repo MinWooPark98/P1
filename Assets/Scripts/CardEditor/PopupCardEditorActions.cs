@@ -12,13 +12,13 @@ public class PopupCardEditorActions : Popup
     [SerializeField]
     private ScrollRect scrollRect = null;
     [SerializeField]
-    private ItemCardActionEditor prefabItem = null;
+    private ComponentEditor prefabComponent = null;
 
     [SerializeField]
     private TMP_Dropdown dropDownAddAction = null;
 
-    private List<ItemCardActionEditor> listAction = new List<ItemCardActionEditor>();
-    private ItemCardActionEditor itemSelected = null;
+    private List<ComponentEditor> listComponentAction = new List<ComponentEditor>();
+    private ComponentEditor componentSelected = null;
 
     private CardData cardData = null;
 
@@ -52,13 +52,13 @@ public class PopupCardEditorActions : Popup
 
     protected override void Update()
     {
-        if (itemSelected != null)
+        if (componentSelected != null)
         {
             if (KeyboardManager.Instance.GetKeyDown(this, KeyCode.Delete))
             {
                 KeyboardManager.Instance.RemoveObjInputNeed(this);
-                listAction.Remove(itemSelected);
-                Destroy(itemSelected.gameObject);
+                listComponentAction.Remove(componentSelected);
+                Destroy(componentSelected.gameObject);
                 SelectAction(null);
             }
         }
@@ -74,32 +74,32 @@ public class PopupCardEditorActions : Popup
         {
             for (int i = 0; i < cardData.actionList.Count; i++)
             {
-                ItemCardActionEditor item = Instantiate(prefabItem, scrollRect.content);
-                item.Set(cardData.actionList[i]);
-                item.SetActionClicked(
+                ComponentEditor component = Instantiate(prefabComponent, scrollRect.content);
+                component.Set(cardData.actionList[i]);
+                component.SetActionClicked(
                     () =>
                     {
-                        SelectAction(item);
+                        SelectAction(component);
                     });
-                listAction.Add(item);
+                listComponentAction.Add(component);
             }
         }
     }
 
-    public void SelectAction(ItemCardActionEditor _item)
+    public void SelectAction(ComponentEditor _component)
     {
-        if (itemSelected != null)
+        if (componentSelected != null)
         {
             KeyboardManager.Instance.RemoveObjInputNeed(this);
-            itemSelected.Deselect();
+            componentSelected.Deselect();
         }
 
-        itemSelected = itemSelected == _item ? null : _item;
+        componentSelected = componentSelected == _component ? null : _component;
 
-        if (itemSelected != null)
+        if (componentSelected != null)
         {
             KeyboardManager.Instance.AddObjInputNeed(this);
-            itemSelected.Select();
+            componentSelected.Select();
         }
     }
 
@@ -142,23 +142,23 @@ public class PopupCardEditorActions : Popup
 
         action.actionType = actionType;
 
-        ItemCardActionEditor item = Instantiate(prefabItem, scrollRect.content);    
-        item.Set(action);
-        item.SetActionClicked(
+        ComponentEditor component = Instantiate(prefabComponent, scrollRect.content);
+        component.Set(action);
+        component.SetActionClicked(
             () =>
             {
-                SelectAction(item);
+                SelectAction(component);
             });
-        listAction.Add(item);
+        listComponentAction.Add(component);
     }
 
     public void ButtonSave()
     {
         cardData.actionList.Clear();
 
-        for (int i = 0; i < listAction.Count; i++)
+        for (int i = 0; i < listComponentAction.Count; i++)
         {
-            cardData.actionList.Add(listAction[i].GetAction());
+            cardData.actionList.Add((CardAction.CardAction)listComponentAction[i].GetData());
         }
 
         ButtonClose();

@@ -3,39 +3,40 @@ using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
-public class ItemBuffEditor : MonoBehaviour
+public class ComponentEditor : MonoBehaviour
 {
-    private Dictionary<string, ItemBuffEditorElement> dictField = new Dictionary<string, ItemBuffEditorElement>();
+    private Dictionary<string, ComponentEditorElement> dictField = new Dictionary<string, ComponentEditorElement>();
     [SerializeField]
     private RectTransform parent = null;
     [SerializeField]
-    private ItemBuffEditorElement prefabElement = null;
+    private ComponentEditorElement prefabElement = null;
     [SerializeField]
     private GameObject objSelected = null;
     private bool isSelected = false;
 
-    private BuffData data;
+    private object data;
 
     private System.Action actionClicked = null;
 
-    public void Set(BuffData _data)
+    public void Set(object _data)
     {
         data = _data;
-        Utils.DeleteChild(parent);
+
         dictField.Clear();
 
         FieldInfo[] fields = Utils.GetFields(data.GetType());
         foreach (FieldInfo field in fields)
         {
             object value = field.GetValue(data);
-            ItemBuffEditorElement item = Instantiate(prefabElement, parent);
-            item.Set(field.Name, value, data.target, () => { Set(GetData()); });
+            ComponentEditorElement item = Instantiate(prefabElement, parent);
+            item.Set(field.Name, value);
             dictField.Add(field.Name, item);
         }
     }
 
-    public BuffData GetData()
+    public object GetData()
     {
         FieldInfo[] fields = Utils.GetFields(data.GetType());
 
@@ -51,7 +52,6 @@ public class ItemBuffEditor : MonoBehaviour
                 }
             }
         }
-        data = (BuffData)dataBoxed;
         return data;
     }
 
@@ -72,7 +72,7 @@ public class ItemBuffEditor : MonoBehaviour
         objSelected.SetActive(false);
     }
 
-    public void ButtonItem()
+    public void ButtonClick()
     {
         actionClicked?.Invoke();
     }
