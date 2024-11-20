@@ -152,7 +152,10 @@ public class ComponentEditorElement : MonoBehaviour
                 System.Type listType = typeof(List<>).MakeGenericType(typeComponent);
                 value = Activator.CreateInstance(listType);
                 var addMethod = listType.GetMethod("Add");
-                addMethod.Invoke(value, listComponent.Select((component) => component.GetData()).ToArray());
+                for (int i = 0; i < listComponent.Count; i++)
+                {
+                    addMethod.Invoke(value, new object[] { listComponent[i].GetData() });
+                }
                 break;
             default:
                 return null;

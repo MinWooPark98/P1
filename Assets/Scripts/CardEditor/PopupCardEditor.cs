@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PopupCardEditor : Popup
 {
     [SerializeField]
     private ItemCard itemCard = null;
 
+    [SerializeField]
+    private ScrollRect scroll = null;
     [SerializeField]
     private TMP_InputField textCardId = null;
     [SerializeField]
@@ -19,6 +22,13 @@ public class PopupCardEditor : Popup
     private TMP_InputField textEnhance = null;
     [SerializeField]
     private TMP_InputField textEnergy = null;
+    [SerializeField]
+    private Transform parentFeature = null;
+    [SerializeField]
+    private ComponentEditor prefabComponentFeature = null;
+
+    private List<ComponentEditor> listComponentFeature = new List<ComponentEditor>();
+    private ComponentEditor componentSelected = null;
 
     private CardData cardData = null;
 
@@ -46,6 +56,27 @@ public class PopupCardEditor : Popup
         base.Awake();
     }
 
+    protected override void OnDestroy()
+    {
+        KeyboardManager.Instance.RemoveObjInputNeed(this);
+        base.OnDestroy();
+    }
+
+    protected override void Update()
+    {
+        if (componentSelected != null)
+        {
+            if (KeyboardManager.Instance.GetKeyDown(this, KeyCode.Delete))
+            {
+                KeyboardManager.Instance.RemoveObjInputNeed(this);
+                listComponentFeature.Remove(componentSelected);
+                Destroy(componentSelected.gameObject);
+                SelectFeature(null);
+            }
+        }
+        base.Update();
+    }
+
     public void Set(CardData _cardData)
     {
         cardData = _cardData;
@@ -57,22 +88,68 @@ public class PopupCardEditor : Popup
         dropDownRarity.value = (int)_cardData.rarity;
         textEnhance.text = _cardData.enhanced.ToString();
         textEnergy.text = _cardData.energy.ToString();
+        SelectFeature(null);
+        while (listComponentFeature.Count > 0)
+        {
+            Destroy(listComponentFeature[0].gameObject);
+            listComponentFeature.RemoveAt(0);
+        }
+        if (cardData.featureList != null)
+        {
+            for (int i = 0; i < cardData.featureList.Count; i++)
+            {
+                ComponentEditor component = Instantiate(prefabComponentFeature, parentFeature);
+                component.Set(cardData.featureList[i]);
+                component.SetActionClicked(
+                    () =>
+                    {
+                        SelectFeature(component);
+                    });
+                listComponentFeature.Add(component);
+            }
+        }
     }
 
     public void ButtonActions()
     {
         PopupCardEditorActions popupCardEditorActions = UIManager.Instance.MakePopup<PopupCardEditorActions>();
         popupCardEditorActions.Set(cardData);
-        popupCardEditorActions.SetAction(
-            () =>
-            {
-                Set(cardData);
-            });
     }
 
-    public void ButtonFeatures()
+    public void SelectFeature(ComponentEditor _component)
     {
+        if (componentSelected != null)
+        {
+            KeyboardManager.Instance.RemoveObjInputNeed(this);
+            componentSelected.Deselect();
+        }
 
+        componentSelected = componentSelected == _component ? null : _component;
+
+        if (componentSelected != null)
+        {
+            KeyboardManager.Instance.AddObjInputNeed(this);
+            componentSelected.Select();
+        }
+    }
+
+    public void ButtonAddFeature()
+    {
+        ComponentEditor component = Instantiate(prefabComponentFeature, parentFeature);
+        component.Set(new CardData.CardFeature());
+        component.SetActionClicked(
+            () =>
+            {
+                SelectFeature(component);
+            });
+        listComponentFeature.Add(component);
+        StartCoroutine(routine_Reposition());
+    }
+
+    private IEnumerator routine_Reposition()
+    {
+        yield return null;
+        scroll.normalizedPosition = new Vector2(scroll.normalizedPosition.x, 0f);
     }
 
     public void ButtonRemove()
@@ -89,6 +166,11 @@ public class PopupCardEditor : Popup
         cardData.rarity = (CARD_RARITY)dropDownRarity.value;
         cardData.enhanced = System.Int32.Parse(textEnhance.text);
         cardData.energy = System.Int32.Parse(textEnergy.text);
+        cardData.featureList.Clear();
+        for (int i = 0; i < listComponentFeature.Count; i++)
+        {
+            cardData.featureList.Add((CardData.CardFeature)listComponentFeature[i].GetData());
+        }
 
         CardManager.Instance.SaveBook();
     }
