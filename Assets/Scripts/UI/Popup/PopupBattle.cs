@@ -237,6 +237,7 @@ public class PopupBattle : Popup
                     DiscardCard(cardList[i]);
                     break;
                 case ItemCard.CARD_STATE.EXHAUSTED:
+                    ExhaustCard(cardList[i]);
                     break;
                 default:
                     break;

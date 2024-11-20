@@ -20,6 +20,18 @@ public class PopupBattleRewardCard : Popup
         base.Awake();
     }
 
+    protected override void Start()
+    {
+        KeyboardManager.Instance.AddActionEscape(ButtonClose);
+        base.Start();
+    }
+
+    protected override void OnDestroy()
+    {
+        KeyboardManager.Instance.RemoveActionEscape(ButtonClose);
+        base.OnDestroy();
+    }
+
     protected override void Update()
     {
         for (int i = 0; i < cardList.Count; i++)

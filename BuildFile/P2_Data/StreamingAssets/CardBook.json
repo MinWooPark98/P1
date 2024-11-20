@@ -440,24 +440,9 @@
       "id": 200,
       "idName": "Test",
       "rarity": 1,
-      "enhanced": 6,
+      "enhanced": 0,
       "energy": 1,
       "actionList": [
-        {
-          "$type": "CardAction.SingleAttack, Assembly-CSharp",
-          "targetType": 1,
-          "damage": 0,
-          "actionType": 0,
-          "buffs": [
-            {
-              "target": 0,
-              "type": 11018,
-              "value": 2,
-              "applySelf": false,
-              "applyAllEnemies": false
-            }
-          ]
-        },
         {
           "$type": "CardAction.DrawCard, Assembly-CSharp",
           "drawCount": 2,
